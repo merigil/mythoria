@@ -55,14 +55,19 @@ fun MapScreen(
     val points by repository.points.collectAsState(initial = emptyList())
     val gameState by repository.gameState.collectAsState()
     
+    val locationOverlay = remember { MyLocationNewOverlay(GpsMyLocationProvider(context), mapView) }
+
     LaunchedEffect(Unit) {
         mapView.setTileSource(TileSourceFactory.MAPNIK)
         mapView.setMultiTouchControls(true)
-        mapView.setBuiltInZoomControls(false) // Desactiva els botons de + i -
+        mapView.setBuiltInZoomControls(false)
         mapView.controller.setZoom(18.0)
-        mapView.controller.setCenter(GeoPoint(41.95531, 2.33645))
         
-        val locationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(context), mapView)
+        // Centrem el mapa dinàmicament segons la llegenda activa
+        val isSerpent = points.any { it.id.startsWith("s_") && it.state != PointState.LOCKED }
+        val centerLocation = if (isSerpent) GeoPoint(41.930675, 2.254059) else GeoPoint(41.932339, 2.252533)
+        mapView.controller.setCenter(centerLocation)
+        
         locationOverlay.enableMyLocation()
         locationOverlay.enableFollowLocation()
         locationOverlay.isDrawAccuracyEnabled = true
@@ -71,9 +76,17 @@ fun MapScreen(
 
     LaunchedEffect(points) {
         addMarkersToMap(mapView, points) { selectedPoint ->
-            // Tornem a permetre el clic sempre que el punt estigui VISIBLE
-            // El repositori ja s'encarrega que la puntuació només es sumi el primer cop
-            onPointClick(selectedPoint)
+            val userLocation = locationOverlay.myLocation
+            if (userLocation != null) {
+                val distance = userLocation.distanceToAsDouble(selectedPoint.coordinate)
+                if (distance <= 20.0) { // 20 metros de radio
+                    onPointClick(selectedPoint)
+                } else {
+                    Toast.makeText(context, "Estàs massa lluny per interactuar!", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                Toast.makeText(context, "Esperant el senyal GPS...", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -122,9 +135,10 @@ fun MapScreen(
                             .background(Color.White, RoundedCornerShape(20.dp))
                             .padding(horizontal = 16.dp, vertical = 8.dp)
                     ) {
+                        val isSerpent = points.any { it.id.startsWith("s_") && it.state != PointState.LOCKED }
                         val statusText = when (gameState.status) {
-                             com.example.mitego.model.GameStatus.ACTIVE_PLAY -> "Suma 100 punts de vida i desafia el Baró"
-                             com.example.mitego.model.GameStatus.BARO_CHALLENGE -> "FUGIU DEL BARÓ!"
+                             com.example.mitego.model.GameStatus.ACTIVE_PLAY -> if (isSerpent) "Busca les pistes de la Serpent" else "Suma 100 punts de vida i desafia el Baró"
+                             com.example.mitego.model.GameStatus.BARO_CHALLENGE -> if (isSerpent) "CORRE AL MIG DE LA PLAÇA!" else "FUGIU DEL BARÓ!"
                              com.example.mitego.model.GameStatus.WON -> "HAS GUANYAT!"
                              com.example.mitego.model.GameStatus.LOST -> "Has perdut..."
                              else -> ""
@@ -141,7 +155,7 @@ fun MapScreen(
                     }
                 }
                 
-                if (gameState.status == com.example.mitego.model.GameStatus.BARO_CHALLENGE && gameState.timerSecondsRemaining != null) {
+                if (gameState.timerSecondsRemaining != null) {
                     Spacer(modifier = Modifier.height(8.dp))
                     Box(
                         modifier = Modifier

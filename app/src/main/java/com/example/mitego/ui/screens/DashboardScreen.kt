@@ -5,20 +5,23 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccessibilityNew
+import androidx.compose.material.icons.filled.AccessibleForward
 import androidx.compose.material.icons.filled.Diversity3
+import androidx.compose.material.icons.filled.EmojiPeople
 import androidx.compose.material.icons.filled.EscalatorWarning
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -30,11 +33,41 @@ import com.example.mitego.ui.components.BottomMenuBar
 import com.example.mitego.ui.components.MainTopAppBar
 import com.example.mitego.ui.components.SearchField
 
+data class LegendAdventure(
+    val id: String, // Identificador únic
+    val title: String,
+    val imageUrl: String?,
+    val isActive: Boolean,
+    val location: String = "A Osona (Temps aprox. 2 h)",
+    val isAccessible: Boolean = false,
+    val isForwardAccessible: Boolean = false
+)
+
 @Composable
 fun DashboardScreen(
-    onNavigateToMap: () -> Unit,
+    onNavigateToMap: (String) -> Unit, // Ara accepta l'ID de la llegenda
     onNavigateToTrobador: () -> Unit
 ) {
+    var searchQuery by remember { mutableStateOf("") }
+    
+    val allLegends = remember {
+        listOf(
+            LegendAdventure("BARO", "La font de la Baronessa", "foto_castell_del_baro", true, isAccessible = true),
+            LegendAdventure("SERPENT", "La Serpent de Manlleu", "placa_de_fra_bernadi_manlleu", true, "A Osona (Temps aprox. 1 h)", isAccessible = true, isForwardAccessible = true),
+            LegendAdventure("MINYONA", "El Salt de la Minyona", "salt_de_la_minyona", true, "A Osona (Temps aprox. 2 h)", isAccessible = true),
+            LegendAdventure("CASTELL", "El Castell Perdut", null, false),
+            LegendAdventure("COVES", "Les Coves del Drac", null, false)
+        )
+    }
+
+    val filteredLegends = remember(searchQuery) {
+        if (searchQuery.isBlank()) {
+            allLegends
+        } else {
+            allLegends.filter { it.title.contains(searchQuery, ignoreCase = true) }
+        }
+    }
+
     Scaffold(
         topBar = {
             MainTopAppBar(
@@ -44,7 +77,7 @@ fun DashboardScreen(
         bottomBar = {
             BottomMenuBar(
                 activeItem = "book",
-                onFirstItemClick = onNavigateToMap,
+                onFirstItemClick = { /* Pròximament: Mapa general */ },
                 onTrobadorClick = onNavigateToTrobador,
                 onBookClick = { /* Ja estem aquí */ }
             )
@@ -69,7 +102,11 @@ fun DashboardScreen(
                 modifier = Modifier.padding(vertical = 8.dp)
             )
 
-            SearchField(modifier = Modifier.padding(vertical = 8.dp))
+            SearchField(
+                query = searchQuery,
+                onQueryChange = { searchQuery = it },
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -78,28 +115,15 @@ fun DashboardScreen(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(bottom = 16.dp)
             ) {
-                item {
+                items(filteredLegends) { legend ->
                     LegendAdventureCard(
-                        title = "La font de la Baronessa",
-                        imageRes = R.drawable.foto_castell_del_baro,
-                        isActive = true,
-                        onClick = onNavigateToMap
-                    )
-                }
-                item {
-                    LegendAdventureCard(
-                        title = "El Castell Perdut",
-                        imageRes = null,
-                        isActive = false,
-                        onClick = {}
-                    )
-                }
-                item {
-                    LegendAdventureCard(
-                        title = "Les Coves del Drac",
-                        imageRes = null,
-                        isActive = false,
-                        onClick = {}
+                        title = legend.title,
+                        imageUrl = legend.imageUrl,
+                        isActive = legend.isActive,
+                        location = legend.location,
+                        isAccessible = legend.isAccessible,
+                        isForwardAccessible = legend.isForwardAccessible,
+                        onClick = { onNavigateToMap(legend.id) }
                     )
                 }
             }
@@ -110,10 +134,15 @@ fun DashboardScreen(
 @Composable
 fun LegendAdventureCard(
     title: String,
-    imageRes: Int?,
+    imageUrl: String?,
     isActive: Boolean,
+    location: String,
+    isAccessible: Boolean = false,
+    isForwardAccessible: Boolean = false,
     onClick: () -> Unit
 ) {
+    val context = LocalContext.current
+    
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -129,26 +158,27 @@ fun LegendAdventureCard(
                     .fillMaxWidth()
                     .padding(14.dp)
             ) {
-                // Fila superior amb Imatge i Textos
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Imatge
                     Box(
                         modifier = Modifier
                             .size(70.dp)
                             .clip(RoundedCornerShape(8.dp))
                             .background(Color.LightGray)
                     ) {
-                        if (imageRes != null) {
-                            Image(
-                                painter = painterResource(id = imageRes),
-                                contentDescription = title,
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier.fillMaxSize(),
-                                alpha = if (isActive) 1f else 0.5f
-                            )
+                        if (imageUrl != null) {
+                            val resId = context.resources.getIdentifier(imageUrl, "drawable", context.packageName)
+                            if (resId != 0) {
+                                Image(
+                                    painter = painterResource(id = resId),
+                                    contentDescription = title,
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier.fillMaxSize(),
+                                    alpha = if (isActive) 1f else 0.5f
+                                )
+                            }
                         }
                         if (!isActive) {
                             Icon(
@@ -162,7 +192,6 @@ fun LegendAdventureCard(
 
                     Spacer(modifier = Modifier.width(16.dp))
 
-                    // Textos
                     Column(
                         modifier = Modifier.weight(1f)
                     ) {
@@ -176,7 +205,7 @@ fun LegendAdventureCard(
                         )
                         
                         Text(
-                            text = "A Osona (Temps aprox. 2 h)",
+                            text = location,
                             style = TextStyle(
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.SemiBold,
@@ -186,7 +215,6 @@ fun LegendAdventureCard(
                     }
                 }
 
-                // Botó a la part inferior ocupant tot l'ample
                 if (isActive) {
                     Spacer(modifier = Modifier.height(14.dp))
                     
@@ -213,7 +241,6 @@ fun LegendAdventureCard(
                 }
             }
 
-            // Icones de dificultat (Dalt a la dreta, sense solapar gràcies al padding de la columna)
             if (isActive) {
                 Row(
                     modifier = Modifier
@@ -221,9 +248,33 @@ fun LegendAdventureCard(
                         .padding(top = 10.dp, end = 10.dp),
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    Icon(imageVector = Icons.Default.AccessibilityNew, contentDescription = null, modifier = Modifier.size(14.dp), tint = Color.LightGray)
-                    Icon(imageVector = Icons.Default.Diversity3, contentDescription = null, modifier = Modifier.size(14.dp), tint = Color.LightGray)
-                    Icon(imageVector = Icons.Default.EscalatorWarning, contentDescription = null, modifier = Modifier.size(14.dp), tint = Color.LightGray)
+                    val iconColor = Color(0xff0b94fe)
+                    Icon(
+                        imageVector = Icons.Default.Diversity3, 
+                        contentDescription = null, 
+                        modifier = Modifier.size(14.dp), 
+                        tint = iconColor
+                    )
+                    Icon(
+                        imageVector = Icons.Default.EscalatorWarning, 
+                        contentDescription = null, 
+                        modifier = Modifier.size(14.dp), 
+                        tint = iconColor
+                    )
+                    Icon(
+                        imageVector = Icons.Default.EmojiPeople,
+                        contentDescription = "Accessible", 
+                        modifier = Modifier.size(14.dp), 
+                        tint = iconColor
+                    )
+                    if (isForwardAccessible) {
+                        Icon(
+                            imageVector = Icons.Default.AccessibleForward,
+                            contentDescription = "Forward Accessible",
+                            modifier = Modifier.size(14.dp),
+                            tint = iconColor
+                        )
+                    }
                 }
             }
         }

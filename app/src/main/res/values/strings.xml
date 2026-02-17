@@ -1,11 +1,5 @@
 <resources>
     <string name="app_name" translatable="false">CaçaMites</string>
     <string name="permission_required" translatable="false">Aquesta aplicació necessita accés a la ubicació per guiar-te en la llegenda.</string>
-    <string name="grant_permission">Donar Perimés</string>
-
-    <!-- <string name="app_name">MiteGo</string> -->
-
-    <!-- <string name="app_name">MiteGo</string> -->
-
-    <!-- <string name="app_name">MiteGo</string> -->
+    <string name="grant_permission">Donar Permís</string>
 </resources>

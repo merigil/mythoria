@@ -8,7 +8,9 @@ enum class PointType {
     OBJECT,
     ENEMY,
     SURPRISE,
-    UNKNOWN
+    UNKNOWN,
+    QUIZ,
+    HIDDEN_OBJECT // Nou tipus per a objectes invisibles
 }
 
 enum class PointState {
@@ -27,5 +29,16 @@ data class Point(
     val warningRadius: Double = 25.0,
     val score: Int = 0,
     val isMandatory: Boolean = false,
-    val isTrap: Boolean = false
+    val isTrap: Boolean = false,
+    val quiz: Quiz? = null,
+    val isAlwaysInvisible: Boolean = false, // Propietat per forçar invisibilitat al mapa
+    val nextPointId: String? = null,        // ID del següent punt a desbloquejar (per a seqüències)
+    val triggersTimer: Boolean = false      // Indica si aquest punt activa un cronòmetre
+)
+
+data class Quiz(
+    val question: String,
+    val options: List<String>,
+    val correctOptionIndex: Int,
+    val pointsIfCorrect: Int
 )
