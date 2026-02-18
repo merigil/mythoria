@@ -194,34 +194,16 @@ fun TrobadorScreen(
                         }
                     } else {
                         append("""
-                            Conta la llegenda que...
-                            
-                            Fa segles, als boscos de Savassona, governava un baró poderós. Temut més que estimat, exigia lleialtat absoluta. El seu orgull era tan gran com el seu domini, i sense saber-ho, ja marcava el camí de la seva condemna.
-                            
-                            La seva esposa era bella i culta, d’esperit lliure. No encaixava en un món de murs i soledat.
-                            
-                            Home de guerra, el baró marxà a les Croades. Abans de partir, confià la cura de la Baronessa al seu criat més fidel. 
-                            
-                            El castell quedà en silenci, i el temps començà a treballar a favor d’un amor secret.
+                            Conta la llegenda que….
+                            Als boscos de Savassona antic,
+                             regnava un baró d’acer i crit.
+                             Orgullós, temut per la seva llei,
+                             més fred que l’hivern, més dur que rei.
+                            Bella dama, d’esperit clar,
+                             somniava lliure entre murs d’acer.
+                            Partí a Croada amb ferro i honor;
+                             al castell, germinà secret amor.
                         """.trimIndent())
-                        
-                        if (gameState.visitedPoints.contains("p_jove")) {
-                            append("\n\n")
-                            append("""
-                                Els dos enamorats es trobaven a la balma on brollava la font, compartint paraules i mirades. Allà, lluny de tothom, el seu afecte creixia, un amor fràgil i prohibit que només existia entre les ombres.
-
-                                Desconfiat, quan el baró tornà de les creuades no ho va fer pel camí habitual, ho va fer d’amagat pel camí de Can Janot. Prop de la font, aparegué sobtadament i descobrí allò que la gelosia ja li havia fet témer.
-                            """.trimIndent())
-                        }
-                        
-                        if (isWon) {
-                            append("\n\n")
-                            append("""
-                                Cegat per la gelosia, el Baró els va atacar amb la seva espasa. A la balma, on s’havien trobat en secret, va matar la Baronessa i el seu criat, segellant així el seu terrible destí per sempre més.
-
-                                Diu la tradició que, les nits de lluna plena, només aquelles persones que han estat traïdes per les seves parelles poden veure, reflectida a la lluna, la imatge de la Baronessa acompanyada del seu amant.
-                            """.trimIndent())
-                        }
                     }
                 }
 
@@ -247,32 +229,19 @@ fun TrobadorScreen(
                 Spacer(modifier = Modifier.height(20.dp))
 
                 // Linia discontínua (efecte paper retallat) més marcada
-                Text(
-                    text = "- - - - - - - - - - - - - - - - - - - - - - -",
-                    color = Color.Black.copy(alpha = 0.4f),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth(),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp,
-                    letterSpacing = 2.sp
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
                 if (!isWon) {
                     Text(
-                        text = "Avança amb el joc, ajuda als seus protagonistes i descobriràs més fragments de la llegenda.",
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF1A1A1A)
-                        ),
-                        lineHeight = 22.sp,
-                        modifier = Modifier.fillMaxWidth()
+                        text = "- - - - - - - - - - - - - - - - - - - - - - -",
+                        color = Color.Black.copy(alpha = 0.4f),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth(),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp,
+                        letterSpacing = 2.sp
                     )
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
                 // Repte (No Merienda)
                 Surface(
@@ -307,10 +276,6 @@ fun TrobadorScreen(
                                 ChallengeItem(
                                     text = "Trobar l’espasa", 
                                     checked = gameState.inventory.contains("espassa")
-                                )
-                                ChallengeItem(
-                                    text = "Parlar amb el criat", 
-                                    checked = gameState.visitedPoints.contains("p_jove")
                                 )
                                 ChallengeItem(
                                     text = "Parlar amb la Baronessa",

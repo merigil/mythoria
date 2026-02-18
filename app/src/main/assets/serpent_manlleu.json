@@ -1,0 +1,149 @@
+{
+  "id": "SERPENT",
+  "title": "La Serpent de Manlleu",
+  "region": "Osona",
+  "estimatedTime": "1 h",
+  "difficulty": "Mitjana",
+  "isAccessible": true,
+  "config": {
+    "challengeTimerSeconds": 1800,
+    "winCondition": {
+      "minScore": 0,
+      "requiredItems": ["s_morter", "s_rubi"],
+      "finalPointId": "s_final",
+      "finalTimerSeconds": 10
+    }
+  },
+  "points": [
+    {
+      "id": "s_start",
+      "title": "Plaça de Fra Bernadí",
+      "coordinate": {"lat": 41.930675, "lon": 2.254059},
+      "type": "NARRATIVE",
+      "state": "VISIBLE"
+    },
+    {
+      "id": "s_pregoner",
+      "title": "El Pregoner",
+      "coordinate": {"lat": 41.930467, "lon": 2.253944},
+      "type": "NARRATIVE",
+      "nextPointId": "s_barquer"
+    },
+    {
+      "id": "s_barquer",
+      "title": "La barquera",
+      "coordinate": {"lat": 41.930191, "lon": 2.253875},
+      "type": "NARRATIVE",
+      "nextPointId": "s_vaquer"
+    },
+    {
+      "id": "s_vaquer",
+      "title": "El vaquer",
+      "coordinate": {"lat": 41.930153, "lon": 2.254478},
+      "type": "NARRATIVE",
+      "nextPointId": "s_rubi"
+    },
+    {
+      "id": "s_rubi",
+      "title": "El rubí de la serpent",
+      "coordinate": {"lat": 41.930139, "lon": 2.254656},
+      "type": "HIDDEN_OBJECT",
+      "isAlwaysInvisible": true,
+      "triggersTimer": true,
+      "nextPointId": "s_terrissaire"
+    },
+    {
+      "id": "s_terrissaire",
+      "title": "El terrissaire",
+      "coordinate": {"lat": 41.930406, "lat": 2.254734},
+      "type": "NARRATIVE",
+      "nextPointId": "s_remeiera"
+    },
+    {
+      "id": "s_remeiera",
+      "title": "La vella remeiera",
+      "coordinate": {"lat": 41.930389, "lon": 2.254480},
+      "type": "NARRATIVE",
+      "nextPointId": "s_morter"
+    },
+    {
+      "id": "s_morter",
+      "title": "El Morter",
+      "coordinate": {"lat": 41.930529, "lon": 2.254812},
+      "type": "HIDDEN_OBJECT",
+      "isAlwaysInvisible": true,
+      "nextPointId": "s_final"
+    },
+    {
+      "id": "s_final",
+      "title": "La plaça",
+      "coordinate": {"lat": 41.930523, "lon": 2.254483},
+      "type": "NARRATIVE"
+    }
+  ],
+  "cards": [
+    {
+      "id": "c_s_start",
+      "title": "Plaça de Fra Bernadí",
+      "description": "Benvingut a Manlleu! Estàs a punt d'iniciar la llegenda de la Serpent. Busca les pistes per trobar els objectes perduts.",
+      "type": "Llegenda",
+      "imageUrl": "placa_de_fra_bernadi_manlleu"
+    },
+    {
+      "id": "c_s_pregoner",
+      "title": "El Pregoner",
+      "description": "«Apropeu-vos, nens i nenes, vells i joves, i escolteu la llegenda que avui encara pot despertar-se. La por recorre els carrers de Manlleu: caps de bestiar desapareixen i, ai las, fins i tot un infant. A la llera del riu Ter ha estat vista l’última vegada, una serpent immensa, amb una pedra preciosa al front que li dóna poder. Qui gosi robar-li la joia alliberarà la vila i assolirà riquesa eterna.»",
+      "type": "Llegenda",
+      "imageUrl": "serpent_pregoner"
+    },
+    {
+      "id": "c_s_barquer",
+      "title": "La barquera",
+      "description": "«Ah, escolta’m bé, que no parlo a la lleugera. Diuen que s’ha vist una bestia, sí, la Serpent del riu Ter. No sempre fou monstre, no: abans era dona, jove i orgullosa, plena d’enveja. Però una maledicció cruel la transformà en serp gegantina, condemnant-la a arrossegar-se per les vores del riu, apartada del món dels homes. Vols travessar a l’altra banda? Fixa’t bé: jo no t’hi portaré, que la por em té pres. Busca aquells de bona fama i pregunta’ls; ells et mostraran el camí segur.»",
+      "type": "Llegenda",
+      "imageUrl": "serpent_la_barquera"
+    },
+    {
+      "id": "c_s_vaquer",
+      "title": "El vaquer",
+      "description": "«Fa dues setmanes tenia 10 vaques, avui en tinc la meitat, una bestia ve per la nit i se les endú i ara també un nen ha desaparegut! Si el rubí algú li treu del cap de ben segur que la serp els seus poders perdrà i podrem respirar tranquils. Està prop del riu, camina des d’aquí, recta cap al riu. Estigues al cas perquè no sabràs on està fins que no hi siguis al damunt.»",
+      "type": "Llegenda",
+      "imageUrl": "serpent_el_vaquer"
+    },
+    {
+      "id": "c_s_rubi",
+      "title": "El rubí de la serpent",
+      "description": "«Heu trobat el rubí encantat, i ahora el temps us pressiona: trenta minuts només per descobrir el morter que posarà fi a la malícia de la bèstia. La serpent, astuta i enfurismada, ha percebut la vostra presència i us persegueix amb fúria. Córrer no és només un consell, sinó l’única esperança! Marxeu de pressa, seguiu els camins antics i dirigiu-vos al proper punt del mapa: allà es decidirà el destí vostre… i el de tot Manlleu!»",
+      "type": "Objecte",
+      "imageUrl": "el_rubi"
+    },
+    {
+      "id": "c_s_terrissaire",
+      "title": "El terrissaire",
+      "description": "«Escolta bé, viatger, que no són paraules per a corallers tremolosos! Si vols vèncer aquella serpent que ens amenaça, hauràs de trobar un morter gegant, dur-lo fins al mig de la plaça i amagar-t’hi dins —sí, tal com m’han contat els vells del poble. Allà, hauràs d’aguantar que la bèstia no el pugui trencar amb la seva força terrible. Però atenció: jo, humil botiguer de terrissa, no sé pas on trobar un morter tan gran! Ves a veure la vella remeiera, ella sap tot i t’orientarà.»",
+      "type": "Llegenda",
+      "imageUrl": "serpent_el_terrisaire"
+    },
+    {
+      "id": "c_s_remeiera",
+      "title": "La vella remeiera",
+      "description": "«Escolteu-me, fills i filles: el morter gegant s’amaga prop d’aquí, amagat sota les tres creus de la font, just sota l’església. Només els valents i astuts podran trobar-lo i vèncer la Serpent maleïda.»",
+      "type": "Llegenda",
+      "imageUrl": "serpent_la_remeiera"
+    },
+    {
+      "id": "c_s_morter",
+      "title": "El Morter",
+      "description": "«Heu trobat el morter amagat sota les tres creus, però això només és el començament de la vostra prova. La Serp, enfurismada com mai, fumeja i colpeja amb força terrible. Si voleu triomfar i salvar la vila, heu de fer un pas més: endinsar-vos al cor de la plaça, resistir la seva ràbia i mantenir-vos ferms.»",
+      "type": "Objecte",
+      "imageUrl": "serpent_morter"
+    },
+    {
+      "id": "c_s_final",
+      "title": "Victòria a la Plaça",
+      "description": "«Heu resistit, valents, i la victòria és vostra! El rubí us pertany, i tot el poble, ple d’agraïment, us ofereix un cofre on, dins, descansa un antic pergamí que conté la llegenda sencera.»",
+      "type": "Pots consultar La Trobadora.",
+      "imageUrl": "victoria_serpent"
+    }
+  ]
+}
