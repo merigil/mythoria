@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Location
 import android.os.Looper
-import android.util.Log
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -19,27 +18,21 @@ class LocationManager(private val context: Context) {
 
     private val client: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
 
-    @SuppressLint("MissingPermission")
+    @SuppressLint("MissingPermission") // Permissions handled in UI layer
     fun getLocationFlow(): Flow<Location> = callbackFlow {
-        Log.d("MiteGoDebug", "Requesting Location Updates (1s interval)")
-        
-        val request = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000) // 1 segon
-            .setMinUpdateDistanceMeters(0f) // Qualsevol moviment
+        val request = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 5000) // 5 seconds
+            .setMinUpdateDistanceMeters(2f)
             .build()
 
         val callback = object : LocationCallback() {
             override fun onLocationResult(result: LocationResult) {
-                result.lastLocation?.let { 
-                    Log.d("MiteGoDebug", "GPS Location: ${it.latitude}, ${it.longitude}")
-                    trySend(it) 
-                }
+                result.lastLocation?.let { trySend(it) }
             }
         }
 
         client.requestLocationUpdates(request, callback, Looper.getMainLooper())
 
         awaitClose {
-            Log.d("MiteGoDebug", "Stopping Location Updates")
             client.removeLocationUpdates(callback)
         }
     }

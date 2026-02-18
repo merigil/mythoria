@@ -1,12 +1,10 @@
 package com.example.mitego.ui.screens
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -18,10 +16,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CenterAlignedTopAppBar // Using as button container per design?
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
+import androidx.compose.material3.Surface // Alternative to Scaffold for partial usage
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -34,130 +32,136 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.example.mitego.ui.theme.ForestGreen
-import com.example.mitego.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
     onLoginClick: () -> Unit
 ) {
+    // Colors from design
     val AppColors_color_Black_60 = Color(0x99000000)
-    val primaryBlue = Color(0xff0b94fe)
+    val helpText16019 = false // Defaulting to false as logic isn't provided
 
     Box(
         modifier = Modifier
-            .fillMaxSize()
+            .requiredWidth(width = 411.dp)
+            .requiredHeight(height = 980.dp)
             .background(color = Color.White)
     ) {
-        // Logo
-        Image(
-            painter = painterResource(id = R.drawable.logo_cacamites_petit),
-            contentDescription = "CaçaMites Logo",
+        // Logo / Circle Background
+        Box(
             modifier = Modifier
-                .align(alignment = Alignment.TopCenter)
-                .offset(y = 100.dp)
-                .requiredSize(width = 180.dp, height = 100.dp)
+                .align(alignment = Alignment.TopStart)
+                .offset(x = 132.dp, y = 62.dp)
+                .requiredWidth(width = 151.dp)
+                .requiredHeight(height = 152.dp)
+                .clip(shape = CircleShape)
+                .background(color = Color(0xff0b94fe))
+        )
+        
+        // Component 2 (Logo Icon Placeholder)
+        // Image(painter = painterResource(id = R.drawable.component2), ... )
+        // Replacing with simple box/text for placeholder
+        Text(
+            text = "Logo",
+            color = Color.White,
+            modifier = Modifier
+                .align(alignment = Alignment.TopStart)
+                .offset(x = 163.dp, y = 120.dp) // Adjusted y to center in circle
         )
 
         // Title: CaçaMites
         Text(
             textAlign = TextAlign.Center,
-            lineHeight = 30.sp,
+            lineHeight = 40.sp, // Adjusted from 5.sp which seemed too small
             text = buildAnnotatedString {
                 withStyle(style = SpanStyle(
                     color = Color(0xfff17002),
-                    fontSize = 25.sp,
-                    fontWeight = FontWeight.Black,
-                    fontFamily = com.example.mitego.ui.theme.Merienda)) { append("Caça") }
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.Black)) { append("Caça") }
                 withStyle(style = SpanStyle(
                     color = Color(0xff202020),
-                    fontSize = 25.sp,
-                    fontWeight = FontWeight.Black,
-                    fontFamily = com.example.mitego.ui.theme.Merienda)) { append("Mites") }
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.Black)) { append("Mites") }
             },
             modifier = Modifier
-                .align(alignment = Alignment.TopCenter)
-                .offset(y = 210.dp)
-                .requiredWidth(width = 411.dp)
+                .align(alignment = Alignment.TopStart)
+                .offset(x = 0.dp, y = 230.dp)
+                .requiredWidth(width = 415.dp)
                 .requiredHeight(height = 48.dp)
         )
 
         // Input: Nom
         Box(
-            contentAlignment = Alignment.CenterStart,
             modifier = Modifier
-                .align(alignment = Alignment.TopCenter)
-                .offset(y = 300.dp)
-                .requiredWidth(width = 300.dp)
-                .requiredHeight(height = 64.dp)
-                .clip(shape = RoundedCornerShape(8.dp))
-                .background(color = Color(0xFFF5F5F5))
+                .align(alignment = Alignment.TopStart)
+                .offset(x = 24.dp, y = 309.dp)
+                .requiredWidth(width = 363.dp)
+                .requiredHeight(height = 76.dp)
+                .clip(shape = RoundedCornerShape(5.dp))
+                .background(color = Color.White)
+                .shadow(2.dp) // Adding shadow since Scaffold was removed
         ) {
-             Text(
-                text = "Nom",
-                color = AppColors_color_Black_60,
-                style = TextStyle(fontSize = 14.sp),
-                modifier = Modifier.padding(start = 20.dp)
-            )
+            Column(modifier = Modifier.padding(16.dp)) {
+                 Text(
+                    text = "Nom",
+                    color = AppColors_color_Black_60,
+                    style = TextStyle(fontSize = 16.sp)
+                )
+                // Placeholder for actual input functionality
+            }
         }
 
         // Input: Password
         Box(
-            contentAlignment = Alignment.CenterStart,
             modifier = Modifier
-                .align(alignment = Alignment.TopCenter)
-                .offset(y = 380.dp)
-                .requiredWidth(width = 300.dp)
-                .requiredHeight(height = 64.dp)
-                .clip(shape = RoundedCornerShape(8.dp))
-                .background(color = Color(0xFFF5F5F5))
+                .align(alignment = Alignment.TopStart)
+                .offset(x = 24.dp, y = 437.dp)
+                .requiredWidth(width = 363.dp)
+                .requiredHeight(height = 76.dp)
+                .clip(shape = RoundedCornerShape(5.dp))
+                .background(color = Color.White)
+                 .shadow(2.dp)
         ) {
-             Text(
-                text = "Password",
-                color = AppColors_color_Black_60,
-                style = TextStyle(fontSize = 14.sp),
-                modifier = Modifier.padding(start = 20.dp)
-            )
+             Column(modifier = Modifier.padding(16.dp)) {
+                 Text(
+                    text = "Password",
+                    color = AppColors_color_Black_60,
+                    style = TextStyle(fontSize = 16.sp)
+                )
+            }
              Image(
                 imageVector = Icons.Default.Visibility,
                 contentDescription = "visibility",
-                colorFilter = ColorFilter.tint(primaryBlue),
+                colorFilter = ColorFilter.tint(Color(0xff0b94fe)),
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
                     .padding(end = 16.dp)
-                    .requiredSize(size = 20.dp)
+                    .requiredSize(size = 24.dp)
             )
         }
 
-        // Recuperar contrasenya
-        Text(
-            text = "Recuperar contrasenya",
-            color = Color.Gray,
-            textAlign = TextAlign.End,
-            style = TextStyle(fontSize = 12.sp),
-            modifier = Modifier
-                .align(alignment = Alignment.TopCenter)
-                .offset(y = 450.dp)
-                .requiredWidth(300.dp)
-        )
-
         // Button: ENTRAR
+        // The design used CenterAlignedTopAppBar, which is strange for a button,
+        // but likely due to text centering. Converting to a Surface/Box for better semantics
+        // but keeping the visual properties.
         Surface(
-            color = primaryBlue,
-            shape = RoundedCornerShape(8.dp),
+            color = Color(0xff0b94fe), // Primary Blue
+            shadowElevation = 4.dp,
             modifier = Modifier
-                .align(alignment = Alignment.TopCenter)
-                .offset(y = 520.dp)
-                .requiredWidth(300.dp)
-                .requiredHeight(50.dp)
-                .clickable { onLoginClick() }
+                .align(alignment = Alignment.TopStart)
+                .offset(x = 24.dp, y = 574.dp)
+                .requiredWidth(363.dp) // Assuming width from other inputs as it wasn't specified but needed
+                .requiredHeight(50.dp) // Approximated height
+                .clickable { onLoginClick() } // Added Click Action
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Text(
@@ -165,8 +169,8 @@ fun LoginScreen(
                     color = Color.White,
                     textAlign = TextAlign.Center,
                     style = TextStyle(
-                        fontSize = 16.sp, // Augmentada a 16.sp
-                        fontWeight = FontWeight.Black // Canviat a Black per a màxim gruix
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium
                     )
                 )
             }
@@ -175,48 +179,73 @@ fun LoginScreen(
         // Button: REGISTRA'T
         Surface(
             color = Color.White,
-            shape = RoundedCornerShape(8.dp),
-            border = BorderStroke(2.dp, primaryBlue), // Augmentat a 2.dp per visibilitat
+            shadowElevation = 4.dp,
             modifier = Modifier
-                .align(alignment = Alignment.TopCenter)
-                .offset(y = 600.dp)
-                .requiredWidth(300.dp)
+                .align(alignment = Alignment.TopStart)
+                .offset(x = 24.dp, y = 697.dp)
+                .requiredWidth(363.dp)
                 .requiredHeight(50.dp)
         ) {
              Box(contentAlignment = Alignment.Center) {
                 Text(
                     text = "REGISTRA’T",
-                    color = primaryBlue,
+                    color = Color(0xff0b94fe),
                     textAlign = TextAlign.Center,
                     style = TextStyle(
-                        fontSize = 16.sp, // Augmentada a 16.sp
-                        fontWeight = FontWeight.Black // Canviat a Black per a màxim gruix
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium
                     )
                 )
             }
         }
 
-        // Social Media Placeholder
-        Text(
-            text = "O connecta't amb",
-            color = Color.Gray,
-            textAlign = TextAlign.Center,
-            style = TextStyle(fontSize = 14.sp),
-            modifier = Modifier
-                .align(alignment = Alignment.TopCenter)
-                .offset(y = 700.dp)
-        )
-
         // Footer Text
         Text(
             text = "Condicions d’ús i política de privacitat",
-            color = Color.Gray,
+            color = Color.Black,
             textAlign = TextAlign.Center,
-            style = TextStyle(fontSize = 14.sp),
+            style = TextStyle(fontSize = 10.sp),
             modifier = Modifier
-                .align(alignment = Alignment.BottomCenter)
-                .padding(bottom = 40.dp)
-                .fillMaxWidth()
+                .align(alignment = Alignment.TopStart)
+                .offset(x = (-2).dp, y = 886.dp)
+                .requiredWidth(width = 411.dp)
+                .requiredHeight(height = 57.dp)
+                .wrapContentHeight(align = Alignment.CenterVertically)
+        )
+
+        Text(
+            text = "Recuperar contrasenya",
+            color = Color.Black,
+            textAlign = TextAlign.End,
+            style = TextStyle(fontSize = 10.sp),
+            modifier = Modifier
+                .align(alignment = Alignment.TopStart)
+                .offset(x = 24.dp, y = 628.dp)
+                .requiredWidth(width = 363.dp)
+                .requiredHeight(height = 57.dp)
+                .wrapContentHeight(align = Alignment.CenterVertically)
+        )
+
+        // Social Media Placeholder
+        Box(
+            modifier = Modifier
+                .align(alignment = Alignment.TopStart)
+                .offset(x = 67.dp, y = 799.dp)
+                .requiredWidth(width = 274.dp)
+                .requiredHeight(height = 60.dp)
+                .background(color = Color(0xffdcdcdc))
+        )
+        Text(
+            text = "Xarxes socials",
+            color = Color.Black,
+            textAlign = TextAlign.Center,
+            style = TextStyle(fontSize = 16.sp),
+            modifier = Modifier
+                .align(alignment = Alignment.TopStart)
+                .offset(x = 68.dp, y = 800.dp)
+                .requiredWidth(width = 272.dp)
+                .requiredHeight(height = 57.dp)
+                .wrapContentHeight(align = Alignment.CenterVertically)
         )
     }
 }

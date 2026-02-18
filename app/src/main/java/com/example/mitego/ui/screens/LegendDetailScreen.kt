@@ -2,342 +2,116 @@ package com.example.mitego.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Explore
-import androidx.compose.material.icons.filled.Face
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mitego.R
 import com.example.mitego.model.Card
-import com.example.mitego.model.Point
-import com.example.mitego.model.PointType
+import com.example.mitego.ui.theme.ForestGreen
 import com.example.mitego.ui.theme.GoldAccent
 
 @Composable
 fun LegendDetailScreen(
     card: Card,
-    points: Int = 0,
-    point: Point? = null,
-    onClose: () -> Unit,
-    onNavigateToTrobador: (() -> Unit)? = null,
-    onAnswerQuiz: ((Int) -> Unit)? = null
+    onClose: () -> Unit
 ) {
     val scrollState = rememberScrollState()
-    val isStartPoint = card.id == "c_start"
-    val isQuiz = point?.type == PointType.QUIZ && point.quiz != null
-    val context = LocalContext.current
 
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
+            .verticalScroll(scrollState)
     ) {
-        Column(
+        // Hero Image Area (Placeholder logic for now)
+        Box(
             modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(scrollState)
+                .fillMaxWidth()
+                .height(250.dp)
+                .background(ForestGreen)
         ) {
-            // Hero Image
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(320.dp)
-            ) {
-                // Dinamicament busquem el recurs per nom
-                val imageRes = if (!card.imageUrl.isNullOrEmpty()) {
-                    val resId = context.resources.getIdentifier(card.imageUrl, "drawable", context.packageName)
-                    if (resId != 0) resId else R.drawable.foto_castell_del_baro
-                } else {
-                    R.drawable.foto_castell_del_baro
-                }
-                
-                Image(
-                    painter = painterResource(id = imageRes),
-                    contentDescription = card.title,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(
-                            Brush.verticalGradient(
-                                colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.4f)),
-                                startY = 600f
-                            )
-                        )
-                )
-            }
-
-            // Content Card
-            Column(
-                modifier = Modifier
-                    .offset(y = (-20).dp)
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
-                    .background(Color.White)
-                    .padding(24.dp)
-            ) {
-                if (isStartPoint) {
-                    // --- DISSENY ESPECIAL PER AL PUNT D'INICI ---
-                    Text(
-                        text = card.title,
-                        style = MaterialTheme.typography.headlineLarge.copy(
-                            fontWeight = FontWeight(900),
-                            fontSize = 32.sp,
-                            color = Color.Black
-                        )
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Surface(
-                        color = Color(0xFF0B94FE).copy(alpha = 0.05f),
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = card.description,
-                            modifier = Modifier.padding(16.dp),
-                            style = MaterialTheme.typography.bodyLarge.copy(
-                                lineHeight = 28.sp,
-                                fontSize = 18.sp,
-                                color = Color.Black,
-                                fontWeight = FontWeight(900)
-                            )
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(24.dp))
-                    Divider(color = Color.LightGray.copy(alpha = 0.5f))
-                    Spacer(modifier = Modifier.height(24.dp))
-                    if (card.type.contains("---SEPARATOR---")) {
-                        val parts = card.type.split("---SEPARATOR---")
-                        Text(
-                            text = parts[0].trim(),
-                            style = MaterialTheme.typography.bodyLarge.copy(
-                                fontWeight = FontWeight(900),
-                                fontSize = 16.sp,
-                                color = Color.Black,
-                                lineHeight = 24.sp
-                            )
-                        )
-                        Spacer(modifier = Modifier.height(20.dp))
-                        Divider(color = Color.Black.copy(alpha = 0.15f))
-                        Spacer(modifier = Modifier.height(20.dp))
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable(enabled = onNavigateToTrobador != null) {
-                                    onNavigateToTrobador?.invoke()
-                                }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Face,
-                                contentDescription = "Trobadora",
-                                tint = Color(0xFFF17002),
-                                modifier = Modifier.size(28.dp)
-                            )
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Text(
-                                text = parts[1].trim(),
-                                style = MaterialTheme.typography.bodyMedium.copy(
-                                    fontWeight = FontWeight(900),
-                                    fontSize = 16.sp,
-                                    color = Color(0xFFF17002)
-                                )
-                            )
-                        }
-                    }
-                } else {
-                    // --- DISSENY ESTÀNDARD PER A LA RESTA DE PUNTS ---
-                    Surface(
-                        color = GoldAccent.copy(alpha = 0.15f),
-                        shape = RoundedCornerShape(4.dp)
-                    ) {
-                        Text(
-                            text = if (isQuiz) "PREGUNTA" else card.type.uppercase(),
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                            style = MaterialTheme.typography.labelMedium.copy(
-                                color = GoldAccent,
-                                fontWeight = FontWeight(900),
-                                letterSpacing = 1.5.sp
-                            )
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Text(
-                        text = card.title,
-                        style = MaterialTheme.typography.headlineLarge.copy(
-                            fontWeight = FontWeight(900),
-                            fontSize = 28.sp,
-                            color = Color.Black
-                        )
-                    )
-                    if (points != 0) {
-                        Spacer(modifier = Modifier.height(16.dp))
-                        val sign = if (points > 0) "+" else ""
-                        val badgeColor = if (points > 0) Color(0xFF4CAF50) else Color(0xFFE53935)
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Surface(color = badgeColor, shape = CircleShape, modifier = Modifier.size(8.dp)) {}
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = "$sign$points PUNTS DE VIDA",
-                                style = MaterialTheme.typography.titleMedium.copy(
-                                    color = badgeColor,
-                                    fontWeight = FontWeight(900)
-                                )
-                            )
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(24.dp))
-                    Divider(color = Color.LightGray.copy(alpha = 0.5f))
-                    Spacer(modifier = Modifier.height(24.dp))
-                    Text(
-                        text = card.description,
-                        style = MaterialTheme.typography.bodyLarge.copy(
-                            lineHeight = 26.sp,
-                            fontSize = 16.sp,
-                            color = Color.Black,
-                            fontWeight = FontWeight(900)
-                        )
-                    )
-
-                    // --- QUIZ SECTION ---
-                    if (isQuiz) {
-                        Spacer(modifier = Modifier.height(32.dp))
-                        QuizSection(quiz = point!!.quiz!!, onAnswer = { index -> 
-                            onAnswerQuiz?.invoke(index)
-                        })
-                    }
-                }
-                
-                Spacer(modifier = Modifier.height(40.dp))
-                
-                // Botó TORNAR (Ocult si hi ha un Quiz pendent)
-                if (!isQuiz) {
-                    val buttonColor = if (isStartPoint) Color(0xFFF17002) else Color(0xff0b94fe)
-                    Surface(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(54.dp)
-                            .shadow(elevation = 2.dp, shape = RoundedCornerShape(12.dp))
-                            .clickable { onClose() },
-                        color = buttonColor,
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxSize(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            if (isStartPoint) {
-                                Icon(Icons.Default.Explore, null, tint = Color.White)
-                                Spacer(Modifier.width(12.dp))
-                            }
-                            Text(
-                                text = "TORNAR AL MAPA",
-                                color = Color.White,
-                                style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight(900), letterSpacing = 1.sp)
-                            )
-                        }
-                    }
-                }
-                
-                Spacer(modifier = Modifier.height(20.dp))
-            }
-        }
-
-        IconButton(
-            onClick = onClose,
-            modifier = Modifier
-                .padding(16.dp)
-                .size(40.dp)
-                .clip(CircleShape)
-                .background(Color.White.copy(alpha = 0.8f))
-                .align(Alignment.TopEnd)
-        ) {
-            Icon(Icons.Default.Close, "Tancar", tint = Color.Black)
-        }
-    }
-}
-
-@Composable
-fun QuizSection(quiz: com.example.mitego.model.Quiz, onAnswer: (Int) -> Unit) {
-    var expanded by remember { mutableStateOf(false) }
-    var selectedIndex by remember { mutableStateOf(-1) }
-
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Text(
-            text = "RESPON PER GUANYAR PUNTS:",
-            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Black, color = Color.Gray)
-        )
-        Spacer(modifier = Modifier.height(12.dp))
-        
-        Box(modifier = Modifier.fillMaxWidth()) {
-            OutlinedButton(
-                onClick = { expanded = true },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = if (selectedIndex == -1) "Selecciona una resposta..." else quiz.options[selectedIndex],
-                        color = Color.Black,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(Modifier.weight(1f))
-                    Icon(Icons.Default.ArrowDropDown, null, tint = Color.Black)
-                }
-            }
+            // If we had a real image resource:
+            // Image(painter = ..., contentDescription = null, contentScale = ContentScale.Crop)
             
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-                modifier = Modifier.fillMaxWidth(0.8f).background(Color.White)
+            // Close Button Overlay
+            IconButton(
+                onClick = onClose,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(16.dp)
+                    .background(Color.Black.copy(alpha = 0.3f), shape = MaterialTheme.shapes.small)
             ) {
-                quiz.options.forEachIndexed { index, option ->
-                    DropdownMenuItem(
-                        text = { Text(option, fontWeight = FontWeight.Bold) },
-                        onClick = {
-                            selectedIndex = index
-                            expanded = false
-                        }
-                    )
-                }
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "Tancar",
+                    tint = Color.White
+                )
             }
         }
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        Button(
-            onClick = { if (selectedIndex != -1) onAnswer(selectedIndex) },
-            enabled = selectedIndex != -1,
-            modifier = Modifier.fillMaxWidth().height(50.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
-            shape = RoundedCornerShape(8.dp)
-        ) {
-            Text("DONAR RESPOSTA", fontWeight = FontWeight.Black)
+
+        Column(modifier = Modifier.padding(24.dp)) {
+            Text(
+                text = card.title,
+                style = MaterialTheme.typography.displayMedium.copy(
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Red // DEBUG: Xivato
+                )
+            )
+            
+            Spacer(modifier = Modifier.height(8.dp))
+            
+            Text(
+                text = card.type.uppercase(), // e.g. "LLEGENDA"
+                style = MaterialTheme.typography.labelMedium.copy(
+                    color = GoldAccent,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 2.sp
+                )
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Text(
+                text = card.description,
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    lineHeight = 28.sp
+                ),
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            
+            Spacer(modifier = Modifier.height(32.dp))
+            
+            Button(
+                onClick = onClose,
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = ForestGreen)
+            ) {
+                Text("Tornar al Mapa")
+            }
         }
     }
 }

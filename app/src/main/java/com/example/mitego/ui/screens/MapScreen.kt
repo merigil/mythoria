@@ -1,40 +1,41 @@
 package com.example.mitego.ui.screens
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Backpack
-import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import com.example.mitego.R
 import com.example.mitego.model.Point
-import com.example.mitego.model.PointState
 import com.example.mitego.repository.GameRepository
-import com.example.mitego.ui.components.BottomMenuBar
 import com.example.mitego.ui.components.addMarkersToMap
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
@@ -46,28 +47,21 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 fun MapScreen(
     repository: GameRepository,
     onPointClick: (Point) -> Unit,
-    onOpenBook: () -> Unit,
-    onShowScoreboard: () -> Unit,
-    onNavigateToTrobador: () -> Unit
+    onOpenBook: () -> Unit
 ) {
     val context = LocalContext.current
     val mapView = remember { MapView(context) }
     val points by repository.points.collectAsState(initial = emptyList())
     val gameState by repository.gameState.collectAsState()
     
-    val locationOverlay = remember { MyLocationNewOverlay(GpsMyLocationProvider(context), mapView) }
-
+    // Setup Map Logic (Kept from original)
     LaunchedEffect(Unit) {
         mapView.setTileSource(TileSourceFactory.MAPNIK)
         mapView.setMultiTouchControls(true)
-        mapView.setBuiltInZoomControls(false)
         mapView.controller.setZoom(18.0)
+        mapView.controller.setCenter(GeoPoint(41.9323395951151, 2.252533598712291)) // Start at Test Point
         
-        // Centrem el mapa dinàmicament segons la llegenda activa
-        val isSerpent = points.any { it.id.startsWith("s_") && it.state != PointState.LOCKED }
-        val centerLocation = if (isSerpent) GeoPoint(41.930675, 2.254059) else GeoPoint(41.932339, 2.252533)
-        mapView.controller.setCenter(centerLocation)
-        
+        val locationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(context), mapView)
         locationOverlay.enableMyLocation()
         locationOverlay.enableFollowLocation()
         locationOverlay.isDrawAccuracyEnabled = true
@@ -76,167 +70,191 @@ fun MapScreen(
 
     LaunchedEffect(points) {
         addMarkersToMap(mapView, points) { selectedPoint ->
-            val userLocation = locationOverlay.myLocation
-            if (userLocation != null) {
-                val distance = userLocation.distanceToAsDouble(selectedPoint.coordinate)
-                if (distance <= 20.0) { // 20 metros de radio
-                    onPointClick(selectedPoint)
-                } else {
-                    Toast.makeText(context, "Estàs massa lluny per interactuar!", Toast.LENGTH_SHORT).show()
-                }
-            } else {
-                Toast.makeText(context, "Esperant el senyal GPS...", Toast.LENGTH_SHORT).show()
-            }
+            onPointClick(selectedPoint)
         }
     }
 
-    Scaffold(
-        bottomBar = {
-            BottomMenuBar(
-                activeItem = "backpack",
-                onFirstItemClick = { /* Pròximament: Mochilla */ },
-                onTrobadorClick = onNavigateToTrobador,
-                onBookClick = onOpenBook,
-                firstItemIcon = Icons.Default.Backpack,
-                firstItemLabel = "Motxilla"
-            )
-        }
-    ) { padding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .background(color = Color.White)
-        ) {
-            AndroidView(
-                factory = { mapView },
-                modifier = Modifier.fillMaxSize()
-            )
+    // New UI Shell wrapping the Map
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = Color.White)
+    ) {
+        AndroidView(
+            factory = { mapView },
+            modifier = Modifier.fillMaxSize()
+        )
 
-            // HEADER
-            Header(
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .fillMaxWidth()
-                    .padding(top = 10.dp, start = 16.dp, end = 16.dp),
-                onScoreboardClick = onShowScoreboard
-            )
+        // TOP APP BAR - SCORE & TIMER
+        TopApBarWithStats(
+            score = gameState.currentScore,
+            timeRemaining = gameState.timeRemainingMs,
+            isTimerActive = gameState.isTimerActive,
+            modifier = Modifier.align(Alignment.TopCenter)
+        )
 
-            // Status / Timer
-            Column(
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .padding(top = 85.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                if (gameState.status != com.example.mitego.model.GameStatus.WAITING_TO_START) {
-                    Box(
-                        modifier = Modifier
-                            .background(Color.White, RoundedCornerShape(20.dp))
-                            .padding(horizontal = 16.dp, vertical = 8.dp)
-                    ) {
-                        val isSerpent = points.any { it.id.startsWith("s_") && it.state != PointState.LOCKED }
-                        val statusText = when (gameState.status) {
-                             com.example.mitego.model.GameStatus.ACTIVE_PLAY -> if (isSerpent) "Busca les pistes de la Serpent" else "Suma 100 punts de vida i desafia el Baró"
-                             com.example.mitego.model.GameStatus.BARO_CHALLENGE -> if (isSerpent) "CORRE AL MIG DE LA PLAÇA!" else "FUGIU DEL BARÓ!"
-                             com.example.mitego.model.GameStatus.WON -> "HAS GUANYAT!"
-                             com.example.mitego.model.GameStatus.LOST -> "Has perdut..."
-                             else -> ""
-                        }
-                        
-                        if (statusText.isNotEmpty()) {
-                            Text(
-                                text = statusText,
-                                color = Color.Black,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 14.sp
-                            )
-                        }
-                    }
-                }
-                
-                if (gameState.timerSecondsRemaining != null) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Box(
-                        modifier = Modifier
-                            .background(Color.Red, RoundedCornerShape(12.dp))
-                            .padding(horizontal = 16.dp, vertical = 8.dp)
-                    ) {
-                        val min = gameState.timerSecondsRemaining!! / 60
-                        val sec = gameState.timerSecondsRemaining!! % 60
-                        Text(
-                            text = "%02d:%02d".format(min, sec),
-                            color = Color.White,
-                            fontWeight = FontWeight.Black,
-                            fontSize = 22.sp
-                        )
-                    }
-                }
-            }
+        // BOTTOM BAR - INVENTORY
+        InventoryBottomBar(
+            collectedItems = gameState.keyItemsCollected,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
+        
+        // GAME OVER / WIN OVERLAY
+        gameState.gameResult?.let { result ->
+            GameResultOverlay(result = result)
         }
     }
 }
 
 @Composable
-fun Header(
-    modifier: Modifier = Modifier,
-    onScoreboardClick: () -> Unit
+fun TopApBarWithStats(
+    score: Int,
+    timeRemaining: Long,
+    isTimerActive: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .fillMaxWidth()
+            .height(60.dp)
+            .background(color = Color.White.copy(alpha = 0.9f))
+            .padding(horizontal = 16.dp)
+            .shadow(elevation = 2.dp)
+    ) {
+        Column {
+            Text(
+                text = "Vida: $score",
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.Bold,
+                    color = if (score > 100) Color(0xFF4CAF50) else Color.Black
+                )
+            )
+            Text(
+                text = "Objectiu: >100",
+                style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray)
+            )
+        }
+        
+        if (isTimerActive) {
+            val minutes = (timeRemaining / 1000) / 60
+            val seconds = (timeRemaining / 1000) % 60
+            Text(
+                text = String.format("%02d:%02d", minutes, seconds),
+                style = MaterialTheme.typography.headlineMedium.copy(
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Red
+                )
+            )
+        } else {
+             Text(
+                text = "CaçaMites",
+                style = MaterialTheme.typography.titleLarge.copy(
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xffec6209)
+                )
+            )
+        }
+    }
+}
+
+@Composable
+fun InventoryBottomBar(
+    collectedItems: List<String>,
+    modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(60.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+            .height(70.dp)
+            .background(color = Color.White.copy(alpha = 0.95f))
+            .padding(8.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(
-            modifier = Modifier
-                .size(50.dp)
-                .shadow(4.dp, CircleShape)
-                .background(Color.White, CircleShape)
-                .padding(4.dp),
-            contentAlignment = Alignment.Center
+        InventorySlot(icon = Icons.Default.Person, label = "Jove", isCollected = collectedItems.contains("p_jove"))
+        InventorySlot(icon = Icons.Default.Face, label = "Baronessa", isCollected = collectedItems.contains("p_baronessa"))
+        InventorySlot(icon = Icons.Default.Star, label = "Espasa", isCollected = collectedItems.contains("p_espasa"))
+    }
+}
+
+@Composable
+fun InventorySlot(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String, isCollected: Boolean) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Icon(
+            imageVector = icon,
+            contentDescription = label,
+            tint = if (isCollected) Color(0xFFec6209) else Color.LightGray,
+            modifier = Modifier.size(32.dp)
+        )
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelSmall,
+            color = if (isCollected) Color.Black else Color.Gray
+        )
+    }
+}
+
+@Composable
+fun GameResultOverlay(result: com.example.mitego.model.GameResult) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.8f)),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(32.dp)
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.logo_cacamites_petit),
-                contentDescription = "Logo Mythoria",
-                modifier = Modifier.fillMaxSize().clip(CircleShape)
+            val (title, color) = when(result) {
+                com.example.mitego.model.GameResult.WIN -> "VICTÒRIA!" to Color.Green
+                else -> "GAME OVER" to Color.Red
+            }
+            
+            Text(
+                text = title,
+                style = MaterialTheme.typography.displayMedium.copy(
+                    fontWeight = FontWeight.Bold,
+                    color = color
+                )
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = if (result == com.example.mitego.model.GameResult.WIN) 
+                    "Has vençut al Baró i alliberat la vall!" 
+                else "El temps s'ha acabat o no tens prou força.",
+                style = MaterialTheme.typography.bodyLarge.copy(color = Color.White),
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
             )
         }
-        
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .shadow(2.dp, CircleShape)
-                    .clip(CircleShape)
-                    .background(Color.White)
-                    .clickable { onScoreboardClick() },
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.EmojiEvents,
-                    contentDescription = "Rànquing",
-                    tint = Color(0xFF0B94FE),
-                    modifier = Modifier.size(24.dp)
-                )
-            }
-            Spacer(modifier = Modifier.width(12.dp))
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .shadow(2.dp, CircleShape)
-                    .clip(CircleShape)
-                    .background(Color(0xFF0B94FE)),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = "Profile",
-                    tint = Color.White,
-                    modifier = Modifier.size(22.dp)
-                )
-            }
+    }
+}
+
+@Composable
+fun Property1Default(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .height(58.dp)
+            .background(color = Color.White.copy(alpha = 0.9f)) // Increased alpha for visibility
+    ) {
+        // Simulating the footer icons row
+        Row(
+            modifier = Modifier.fillMaxSize(),
+            horizontalArrangement = Arrangement.SpaceAround,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Default.AccountCircle, // Placeholder
+                contentDescription = "User",
+                tint = Color(0xff1c1b1f),
+                modifier = Modifier.size(24.dp)
+            )
+            // Other placeholders for footer icons
+            Box(modifier = Modifier.size(24.dp).background(Color.LightGray, RoundedCornerShape(4.dp)))
+            Box(modifier = Modifier.size(24.dp).background(Color.LightGray, RoundedCornerShape(4.dp)))
+            Box(modifier = Modifier.size(24.dp).background(Color.LightGray, RoundedCornerShape(4.dp)))
         }
     }
 }
