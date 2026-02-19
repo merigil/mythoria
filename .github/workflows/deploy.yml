@@ -1,0 +1,33 @@
+name: Deploy CaçaMites Backend
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'backend/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Dependencies
+        run: |
+          cd backend
+          npm install
+
+      # Aquí configurariem el deploy a Railway, Render o Heroku
+      # Exemple per a Railway (requereix RAILWAY_TOKEN als secrets de GitHub)
+      - name: Deploy to Railway
+        if: github.ref == 'refs/heads/main'
+        run: |
+          npm install -g @railway/cli
+          railway up --service cacamites-api
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}

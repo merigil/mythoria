@@ -1,11 +1,16 @@
 [versions]
 <<<<<<< HEAD
+<<<<<<< HEAD
 agp = "8.13.2"
 kotlin = "1.9.0"
 =======
 agp = "8.8.1"
 kotlin = "2.1.0"
 >>>>>>> 890cd43 (Fix build errors and update to stable versions (AGP 8.8.1, Kotlin 2.1.0))
+=======
+agp = "9.0.1"
+kotlin = "2.2.10"
+>>>>>>> 0b5bd63 (Branding: Transformació a CaçaMites i infraestructura Backend/CI/CD)
 coreKtx = "1.12.0"
 junit = "4.13.2"
 junitVersion = "1.1.5"

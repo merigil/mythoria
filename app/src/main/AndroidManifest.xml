@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32" /> <!-- Required for OSMDroid caching on older Androids -->
 
+<<<<<<< HEAD
     <application
         android:name=".MiteGoApp"
         android:allowBackup="true"
@@ -24,6 +25,10 @@
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.MiteGo">
+=======
+    <application android:name=".CacaMitesApp" android:allowBackup="true" android:dataExtractionRules="@xml/data_extraction_rules" android:fullBackupContent="@xml/backup_rules" android:icon="@drawable/logo_cacamites_petit" android:label="@string/app_name" android:roundIcon="@drawable/logo_cacamites_petit" android:supportsRtl="true" android:theme="@style/Theme.CacaMites" tools:targetApi="31">
+        <activity android:name=".MainActivity" android:exported="true" android:label="@string/app_name" android:theme="@style/Theme.CacaMites">
+>>>>>>> 0b5bd63 (Branding: Transformació a CaçaMites i infraestructura Backend/CI/CD)
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

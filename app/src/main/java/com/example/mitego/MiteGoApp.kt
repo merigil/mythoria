@@ -4,7 +4,7 @@ import android.app.Application
 import org.osmdroid.config.Configuration
 import java.io.File
 
-class MiteGoApp : Application() {
+class CacaMitesApp : Application() {
     override fun onCreate() {
         super.onCreate()
         // Initialize OSMDroid configuration

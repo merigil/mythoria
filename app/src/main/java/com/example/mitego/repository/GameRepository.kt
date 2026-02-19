@@ -21,6 +21,8 @@ import java.util.Random
 class GameRepository {
 
     private val BARONESSA_CENTER = GeoPoint(41.9323395951151, 2.252533598712291)
+    private val SAVASSONA_CENTER = GeoPoint(41.956361, 2.340167)
+    private val MANLLEU_CENTER = GeoPoint(41.930675, 2.254059)
     
     // Game State
     private val _gameState = MutableStateFlow(GameState())
@@ -50,6 +52,21 @@ class GameRepository {
         )
     }
 
+    private val serpentAdventure by lazy {
+        val generatedPoints = generateSerpentPoints()
+        val cards = generateSerpentCards(generatedPoints)
+        
+        Adventure(
+            id = "adv_serpent",
+            title = "La Serpent de Manlleu",
+            description = "Recupera el rubí de la serpent...",
+            imageUrl = "",
+            points = generatedPoints,
+            cards = cards,
+            isActive = true
+        )
+    }
+
     private val castellAdventure = Adventure(
         id = "adv_castell",
         title = "El Castell Perdut",
@@ -60,7 +77,7 @@ class GameRepository {
         isActive = false
     )
 
-    val adventures: List<Adventure> = listOf(baronessaAdventure, castellAdventure)
+    val adventures: List<Adventure> = listOf(baronessaAdventure, serpentAdventure, castellAdventure)
     private var currentAdventure: Adventure? = null
 
     fun selectAdventure(adventureId: String) {
@@ -75,8 +92,6 @@ class GameRepository {
 
     private fun startGame() {
         _gameState.value = GameState(isGameActive = true, currentScore = 0)
-        // Set all points locked except start point if needed, or visible based on rules
-        // For now, assuming start point unlocks others or all visible for MVP exploration
     }
 
     fun collectPoint(pointId: String) {
@@ -108,17 +123,11 @@ class GameRepository {
                     startTimer()
                 }
 
-                // Check Win Condition (collected items + score > 100 + visited Baron)
-                // Note: User rule says "win when time ends AND we have everything".
-                // But usually, you win immediately if you defeat the boss? 
-                // Let's follow: "Quan s'acaba el temps i tenim tot... guanyem".
-                // So here we just update state. Check win on timer end.
-                
                 newState
             }
             
             // Unlock Card if exists
-            unlockCard("c_${pointId.removePrefix("p_")}")
+            unlockCard("c_${pointId.removePrefix("p_").removePrefix("s_")}")
         }
     }
 
@@ -152,52 +161,39 @@ class GameRepository {
     }
     
     fun unlockCard(cardId: String) {
-        // Implementation to unlock logic if needed separate from collectPoint
+        val currentCards = _cards.value.toMutableList()
+        val cardIndex = currentCards.indexOfFirst { it.id == cardId || it.id == "c_$cardId" }
+        if (cardIndex != -1) {
+            currentCards[cardIndex] = currentCards[cardIndex].copy(isUnlocked = true)
+            _cards.value = currentCards
+        }
     }
 
     // --- Data Generation ---
 
     private fun generateBaronessaPoints(): List<Point> {
         return listOf(
-            createPoint("p_inici", "Inici del Joc", 0.0, 0.0, PointType.MANDATORY, 0, false, PointState.VISIBLE), // Start visible
-            createPoint("p_jove", "El Jove", 100.0, 50.0, PointType.MANDATORY, 15, true),
-            createPoint("p_baronessa", "La Baronessa", BARONESSA_CENTER.latitude, BARONESSA_CENTER.longitude, PointType.MANDATORY, 12, true, PointState.VISIBLE, true), // Center
-            createPoint("p_espasa", "L'Espasa", -50.0, 100.0, PointType.MANDATORY, 30, true),
-            createPoint("p_baro", "El Baró", 400.0, 400.0, PointType.ENEMY, 0, false), // Far away
-            
-            // Optional Points
-            createPoint("p_nen", "Nen Trapella", 50.0, -50.0, PointType.NARRATIVE, -5, false),
-            createPoint("p_mercader", "Mercader Ambulant", -100.0, -100.0, PointType.OBJECT, 15, false),
-            createPoint("p_home", "Home del Camí", 150.0, 0.0, PointType.NARRATIVE, 15, false),
-            createPoint("p_pedra", "Pedra Alta", 200.0, 100.0, PointType.OBJECT, 15, false),
-            createPoint("p_pont", "Pont Antic", 0.0, 200.0, PointType.OBJECT, 15, false),
-            createPoint("p_pastora", "La Pastora", -150.0, 50.0, PointType.NARRATIVE, 10, false),
-            createPoint("p_pastor", "El Pastor", -200.0, -50.0, PointType.NARRATIVE, -10, false),
-            createPoint("p_cavall", "El Cavall", 300.0, 50.0, PointType.NARRATIVE, -5, false),
-            createPoint("p_vi", "La Bota de Vi", -50.0, 300.0, PointType.OBJECT, -8, false),
-            createPoint("p_moneda1", "Moneda de Plata 1", 250.0, -150.0, PointType.OBJECT, 0, false),
-            createPoint("p_moneda2", "Moneda de Plata 2", -250.0, 250.0, PointType.OBJECT, 0, false),
-            createPoint("p_moneda3", "Moneda de Plata 3", 100.0, -300.0, PointType.OBJECT, 0, false),
-            createPoint("p_extra", "Racó Secret", -350.0, 50.0, PointType.SURPRISE, 0, false) // 18th point
+            createPoint("p_start", "Punt d'Inici", SAVASSONA_CENTER.latitude, SAVASSONA_CENTER.longitude, PointType.NARRATIVE, 0, false, PointState.VISIBLE, true),
+            createPoint("p_baronessa", "La Baronessa", 41.953683, 2.335898, PointType.MANDATORY, 12, true, PointState.LOCKED, true),
+            createPoint("p_jove", "El Jove criat", 41.9538348, 2.336077, PointType.MANDATORY, 12, true, PointState.LOCKED, true),
+            createPoint("p_espassa", "L'Espassa Màgica", 41.954496, 2.336380, PointType.OBJECT, 30, true, PointState.LOCKED, true), 
+            createPoint("p_pastora", "La Pastora", 41.956444, 2.340611, PointType.NARRATIVE, 10, false, PointState.LOCKED, true),
+            createPoint("p_baro", "El Baró", 41.953403, 2.336365, PointType.ENEMY, 0, false, PointState.LOCKED, true)
         )
     }
 
-    // Helper to offset coordinates in meters from center
-    private fun createPoint(id: String, title: String, offLatM: Double, offLonM: Double, type: PointType, score: Int, isKey: Boolean, initialState: PointState = PointState.LOCKED, isAbsolute: Boolean = false): Point {
-        // Approx conversion: 1 deg lat ~= 111km, 1 deg lon ~= 111km * cos(lat)
-        val lat: Double
-        val lon: Double
-        
-        if (isAbsolute) {
-             lat = offLatM
-             lon = offLonM
-        } else {
-             val latOffset = offLatM / 111111.0
-             val lonOffset = offLonM / (111111.0 * Math.cos(Math.toRadians(BARONESSA_CENTER.latitude)))
-             lat = BARONESSA_CENTER.latitude + latOffset
-             lon = BARONESSA_CENTER.longitude + lonOffset
-        }
+    private fun generateSerpentPoints(): List<Point> {
+        return listOf(
+            createPoint("s_start", "Plaça de Fra Bernadí", 41.930675, 2.254059, PointType.NARRATIVE, 0, false, PointState.VISIBLE, true),
+            createPoint("s_pregoner", "El Pregoner", 41.930467, 2.253944, PointType.NARRATIVE, 0, false, PointState.LOCKED, true),
+            createPoint("s_vaquer", "El vaquer", 41.930153, 2.254478, PointType.NARRATIVE, 0, false, PointState.LOCKED, true),
+            createPoint("s_rubi", "El rubí de la serpent", 41.930170, 2.254787, PointType.HIDDEN_OBJECT, 0, true, PointState.LOCKED, true),
+            createPoint("s_morter", "El Morter", 41.930555, 2.254905, PointType.HIDDEN_OBJECT, 0, true, PointState.LOCKED, true),
+            createPoint("s_final", "La plaça", 41.930523, 2.254483, PointType.NARRATIVE, 0, false, PointState.LOCKED, true)
+        )
+    }
 
+    private fun createPoint(id: String, title: String, lat: Double, lon: Double, type: PointType, score: Int, isKey: Boolean, initialState: PointState = PointState.LOCKED, isAbsolute: Boolean = true): Point {
         return Point(
             id = id,
             title = title,
@@ -210,24 +206,18 @@ class GameRepository {
     }
     
     private fun generateBaronessaCards(points: List<Point>): List<Card> {
-        return points.map { point ->
-            Card(
-                id = "c_${point.id.removePrefix("p_")}",
-                title = point.title,
-                type = "Llegenda",
-                description = "Has trobat: ${point.title}. ${if(point.scoreValue != 0) "Punts: ${point.scoreValue}" else ""}",
-                imageUrl = "",
-                isUnlocked = false
-            )
-        }.toMutableList().apply {
-            // Update specific descriptions
-            find { it.id == "c_baronessa" }?.description = """
-                Conta la llegenda que, en temps antics, un baró malcarat i gelós es va casar amb una dona jove i molt bella, a qui tractava més com una possessió que no pas com una esposa. En haver de marxar a la guerra, dominat per la desconfiança, la va deixar sota la vigilància d’un criat fidel, amb l’ordre de controlar-la perquè no li fos infidel.
+        return listOf(
+            Card("c_start", "Punt d'Inici", "Benvingut! Has desbloquejat l'aventura.", "", "foto_castell_del_baro", true),
+            Card("c_baronessa", "La Baronessa", "«El meu espòs mai no ha estat home de cor noble. Els seus gelos ferotges i el seu afany de possessió m’han tinguda captiva entre els murs del castell.»", "Llegenda", "la_baronessa", false),
+            Card("c_espassa", "L'Espassa Màgica", "«Aquesta vella espasa guarda el power sagrat de defensar els cors enamorats.»", "Objecte", "la_espassa", false)
+        )
+    }
 
-                La solitud i la convivència, però, van fer néixer entre la baronessa i el criat un amor sincer i prohibit. A poc a poc, trobaven refugi a la balma de la Font de la Baronessa, on expressaven el seu amor en secret, envoltats del murmuri de l’aigua.
-
-                Quan el baró va tornar inesperadament, els va sorprendre junts. Cegat per la fúria i l’orgull ferit, els va matar a tots dos. Des d’aleshores, diu la tradició que les nits de lluna plena se senten els plors de la baronessa a la font, i que qui els escolta ha patit una infidelitat.
-            """.trimIndent()
-        }
+    private fun generateSerpentCards(points: List<Point>): List<Card> {
+        return listOf(
+            Card("c_s_start", "Plaça de Fra Bernadí", "Inici de l'aventura de la Serpent.", "", "serpent_inici", true),
+            Card("c_s_rubi", "El rubí de la serpent", "Has trobat el rubí encantat!", "Objecte", "el_rubi", false),
+            Card("c_s_morter", "El Morter", "L'arma definitiva contra la serpent.", "Objecte", "serpent_morter", false)
+        )
     }
 }
