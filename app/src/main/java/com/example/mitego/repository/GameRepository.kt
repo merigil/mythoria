@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import android.location.Location
 import org.osmdroid.util.GeoPoint
 import java.util.Random
 
@@ -129,6 +130,32 @@ class GameRepository {
             // Unlock Card if exists
             unlockCard("c_${pointId.removePrefix("p_").removePrefix("s_")}")
         }
+    }
+
+    /**
+     * Calcula si el jugador està prou a prop per jugar.
+     */
+    fun checkProximity(
+        userLat: Double, userLng: Double, 
+        targetLat: Double, targetLng: Double, 
+        threshold: Float = 50f
+    ): Pair<Boolean, Float> {
+        val userLocation = Location("user").apply {
+            latitude = userLat
+            longitude = userLng
+        }
+        val targetLocation = Location("target").apply {
+            latitude = targetLat
+            longitude = targetLng
+        }
+        val distance = userLocation.distanceTo(targetLocation)
+        return Pair(distance <= threshold, distance)
+    }
+
+    fun canCollectPoint(pointId: String, userLat: Double, userLng: Double): Boolean {
+        val point = _points.value.find { it.id == pointId } ?: return false
+        val (isNear, _) = checkProximity(userLat, userLng, point.coordinate.latitude, point.coordinate.longitude)
+        return isNear
     }
 
     private fun startTimer() {

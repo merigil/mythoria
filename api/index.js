@@ -1,38 +1,35 @@
-const express = require('express');
-const http = require('http');
-const { Server } = require('socket.io');
-const { Pool } = require('pg');
+const fastify = require('fastify')({ logger: true });
+const cors = require('@fastify/cors');
+const postgres = require('@fastify/postgres');
+const websocket = require('@fastify/websocket');
+const Redis = require('ioredis');
 const crypto = require('crypto');
-const cors = require('cors');
 require('dotenv').config();
-
-const app = express();
-const server = http.createServer(app);
-const io = new Server(server, {
-    cors: { origin: "*" }
-});
-
-app.use(express.json());
-app.use(cors());
 
 const PORT = process.env.PORT || 3000;
 const SECRET_KEY = process.env.HMAC_SECRET_KEY || 'clau-secreta-per-defecte';
 
-// Connexió a Supabase (PostgreSQL)
-const pool = new Pool({
+// Connexió a Redis (per a rànquings Sorted Sets)
+const redis = new Redis(process.env.REDIS_URL);
+
+// Registre de plugins
+fastify.register(cors, { origin: "*" });
+fastify.register(postgres, {
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false }
 });
+fastify.register(websocket);
 
 /**
- * Middleware de seguretat HMAC
+ * Hook de seguretat HMAC
  */
-function validarSeguretat(req, res, next) {
-    const { puntuacio, timestamp } = req.body;
-    const signaturaRebuda = req.headers['x-signature'];
+fastify.decorate('validarHMAC', async (request, reply) => {
+    const { puntuacio, timestamp } = request.body;
+    const signaturaRebuda = request.headers['x-signature'];
 
     if (!puntuacio || !timestamp || !signaturaRebuda) {
-        return res.status(400).json({ error: 'Falten dades de seguretat' });
+        reply.code(400).send({ error: 'Falten dades de seguretat' });
+        return;
     }
 
     const data = `${puntuacio}:${timestamp}`;
@@ -41,20 +38,18 @@ function validarSeguretat(req, res, next) {
         .digest('hex');
 
     if (hash !== signaturaRebuda) {
-        return res.status(403).json({ error: 'Signatura invàlida' });
+        reply.code(403).send({ error: 'Signatura invàlida' });
     }
-    next();
-}
+});
 
 /**
- * Lògica de Proximitat: Detectar si el jugador està a prop de llegendes
- * Utilitza ST_DWithin de PostGIS
+ * Lògica de Proximitat: Detectar llegendes a prop (PostGIS)
  */
-app.get('/api/llegendes/proximitat', async (req, res) => {
-    const { lat, lon, radi = 50 } = req.query;
+fastify.get('/api/llegendes/proximitat', async (request, reply) => {
+    const { lat, lon, radi = 50 } = request.query;
 
     if (!lat || !lon) {
-        return res.status(400).json({ error: 'Falten coordenades' });
+        return reply.code(400).send({ error: 'Falten coordenades' });
     }
 
     try {
@@ -65,68 +60,98 @@ app.get('/api/llegendes/proximitat', async (req, res) => {
             WHERE ST_DWithin(posicio, ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography, $3)
             ORDER BY distancia_metres ASC
         `;
-        const { rows } = await pool.query(query, [lon, lat, radi]);
+        const { rows } = await fastify.pg.query(query, [lon, lat, radi]);
 
-        // Mapejat per a la resposta JSON que espera Android
-        const result = rows.map(r => ({
+        return rows.map(r => ({
             id: r.id,
             titol: r.titol,
             distancia_metres: parseFloat(r.distancia_metres),
             activa: true,
             config: r.config_joc
         }));
-
-        res.json(result);
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Error del servidor' });
+        fastify.log.error(err);
+        return reply.code(500).send({ error: 'Error del servidor' });
     }
 });
 
 /**
- * Finalitzar joc i actualitzar rànquing
+ * Finalitzar joc: Registre en DB + Redis Update + Broadcast
  */
-app.post('/api/joc/finalitzar', validarSeguretat, async (req, res) => {
-    const { jugador_id, llegenda_id, puntuacio } = req.body;
+fastify.post('/api/joc/finalitzar', { preHandler: [fastify.validarHMAC] }, async (request, reply) => {
+    const { jugador_id, llegenda_id, puntuacio } = request.body;
 
     try {
-        // 1. Registrar partida
-        await pool.query(
+        // 1. Persistència en PostgreSQL (Log de seguretat)
+        await fastify.pg.query(
             'INSERT INTO partides (jugador_id, llegenda_id, puntuacio, guanyada, signatura_valida) VALUES ($1, $2, $3, $4, $5)',
             [jugador_id, llegenda_id, puntuacio, true, true]
         );
 
-        // 2. Actualitzar punts globals del jugador
-        const { rows } = await pool.query(
-            'UPDATE jugadors SET punts_globals = punts_globals + $1 WHERE id = $2 RETURNING nickname, punts_globals',
-            [puntuacio, jugador_id]
-        );
+        // 2. Incrementar punts en Redis (Sorted Set per a rànquing d'alta velocitat)
+        const nousPunts = await redis.zincrby('ranking_global', puntuacio, jugador_id);
 
-        if (rows.length > 0) {
-            const jugador = rows[0];
-            // 3. Emetre esdeveniment via WebSockets per al rànquing general
-            io.emit('actualitzacio_ranking', {
-                nickname: jugador.nickname,
-                nous_punts: jugador.punts_globals,
-                missatge: `${jugador.nickname} ha superat una llegenda!`
-            });
-        }
+        // 3. Obtenir nickname per al broadcast
+        const { rows } = await fastify.pg.query('SELECT nickname FROM jugadors WHERE id = $1', [jugador_id]);
+        const nickname = rows[0]?.nickname || 'Anònim';
 
-        res.json({ success: true, message: 'Puntuació registrada i rànquing actualitzat' });
+        // 4. Actualitzar PostgreSQL asíncronament (per consistència)
+        fastify.pg.query('UPDATE jugadors SET punts_globals = $1 WHERE id = $2', [nousPunts, jugador_id]);
+
+        // 5. Broadcast en temps real a tots els connectats
+        fastify.websocketServer.clients.forEach(client => {
+            if (client.readyState === 1) { // OPEN
+                client.send(JSON.stringify({
+                    type: 'ACTUALITZACIO_RANKING',
+                    nickname,
+                    nous_punts: nousPunts,
+                    missatge: `${nickname} ha superat una llegenda!`
+                }));
+            }
+        });
+
+        return { success: true, points: nousPunts };
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Error al registrar la partida' });
+        fastify.log.error(err);
+        return reply.code(500).send({ error: 'Error en processar la puntuació' });
     }
 });
 
-// WebSockets logic
-io.on('connection', (socket) => {
-    console.log('Jugador connectat al canal de rànquing 📊');
-    socket.on('disconnect', () => {
-        console.log('Jugador desconnectat');
-    });
+/**
+ * Rànquing: Obtenir el TOP 10 des de Redis (ultra-ràpid)
+ */
+fastify.get('/api/ranking/top', async (request, reply) => {
+    try {
+        const topIds = await redis.zrevrange('ranking_global', 0, 9, 'WITHSCORES');
+        const ranking = [];
+        for (let i = 0; i < topIds.length; i += 2) {
+            const id = topIds[i];
+            const score = topIds[i + 1];
+            const { rows } = await fastify.pg.query('SELECT nickname FROM jugadors WHERE id = $1', [id]);
+            ranking.push({ nickname: rows[0]?.nickname || 'Anònim', punts: score });
+        }
+        return ranking;
+    } catch (err) {
+        return reply.code(500).send({ error: 'Error en carregar el rànquing' });
+    }
 });
 
-server.listen(PORT, () => {
-    console.log(`Servidor CaçaMites 🛡️ escoltant al port ${PORT}`);
+/**
+ * WebSocket entry point
+ */
+fastify.get('/ws/ranking', { websocket: true }, (connection, req) => {
+    fastify.log.info('Jugador connectat al Live Ranking via WS 📡');
+    connection.socket.send(JSON.stringify({ message: 'Benvingut al Live Ranking de CaçaMites!' }));
 });
+
+const start = async () => {
+    try {
+        await fastify.listen({ port: PORT, host: '0.0.0.0' });
+        console.log(`🚀 Fastify CaçaMites actiu al port ${PORT}`);
+    } catch (err) {
+        fastify.log.error(err);
+        process.exit(1);
+    }
+};
+
+start();
