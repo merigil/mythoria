@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main ]
     paths:
-      - 'backend/**'
+      - 'api/**'
 
 jobs:
   deploy:
@@ -19,7 +19,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          cd backend
+          cd api
           npm install
 
       # Aquí configurariem el deploy a Railway, Render o Heroku
@@ -31,3 +31,5 @@ jobs:
           railway up --service cacamites-api
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          HMAC_SECRET_KEY: ${{ secrets.HMAC_SECRET_KEY }}
