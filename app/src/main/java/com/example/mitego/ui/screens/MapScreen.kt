@@ -53,7 +53,13 @@ fun MapScreen(
             override fun onLocationChanged(location: android.location.Location?, source: org.osmdroid.views.overlay.mylocation.IMyLocationProvider?) {
                 super.onLocationChanged(location, source)
                 location?.let {
-                    repository.updateUserLocation(it.latitude, it.longitude)
+                    val isMock = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        it.isMock
+                    } else {
+                        @Suppress("DEPRECATION")
+                        it.isFromMockProvider
+                    }
+                    repository.updateUserLocation(it.latitude, it.longitude, isMock)
                 }
             }
         }

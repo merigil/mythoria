@@ -46,6 +46,7 @@ fun LegendDetailScreen(
 ) {
     val scrollState = rememberScrollState()
     val userLocation by repository.userLocation.collectAsState()
+    val isUserMock by repository.isUserMock.collectAsState()
     val points by repository.points.collectAsState()
     
     // Trobem el punt corresponent a aquesta carta per saber-ne les coordenades
@@ -130,16 +131,27 @@ fun LegendDetailScreen(
             
             // BOTÓ DINÀMIC DE JOC (Basat en proximitat)
             if (point != null) {
+                if (isUserMock) {
+                    Text(
+                        "⚠️ GPS FALS DETECTAT: Desactiva les apps de 'Mock Location' per jugar.",
+                        color = Color.Red,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                }
+
                 Button(
                     onClick = { /* Aquí aniria la lògica per obrir el minijoc o acció */ },
                     modifier = Modifier.fillMaxWidth().height(56.dp),
-                    enabled = isNear,
+                    enabled = isNear && !isUserMock,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (isNear) Color(0xFFec6209) else Color.Gray,
+                        containerColor = if (isNear && !isUserMock) Color(0xFFec6209) else Color.Gray,
                         disabledContainerColor = Color.LightGray
                     )
                 ) {
-                    if (isNear) {
+                    if (isUserMock) {
+                        Text("JOC BLOQUEJAT", fontWeight = FontWeight.Bold)
+                    } else if (isNear) {
                         Text("COMPENÇA LA LLEGENDA!", fontWeight = FontWeight.Bold)
                     } else {
                         val distText = if (distance >= 0) " (${distance.toInt()}m)" else ""
