@@ -1,11 +1,11 @@
-package com.example.mitego.ui.screens
+package com.cacamites.app.ui.screens
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.mitego.repository.GameRepository
+import com.cacamites.app.repository.GameRepository
 
 @Composable
 fun MainScreen() {
@@ -85,3 +85,4 @@ fun MainScreen() {
         }
     }
 }
+

@@ -1,4 +1,4 @@
-package com.example.mitego.model
+package com.cacamites.app.model
 
 data class Card(
     val id: String,
@@ -8,3 +8,4 @@ data class Card(
     val imageUrl: String? = null,
     val isUnlocked: Boolean = false
 )
+

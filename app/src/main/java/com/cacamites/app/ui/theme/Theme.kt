@@ -1,4 +1,4 @@
-package com.example.mitego.ui.theme
+package com.cacamites.app.ui.theme
 
 import android.app.Activity
 import android.os.Build
@@ -36,7 +36,7 @@ private val LightColorScheme = lightColorScheme(
 )
 
 @Composable
-fun MiteGoTheme(
+fun CacaMitesTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit

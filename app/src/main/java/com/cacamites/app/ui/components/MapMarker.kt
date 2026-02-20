@@ -1,4 +1,4 @@
-package com.example.mitego.ui.components
+package com.cacamites.app.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -17,10 +17,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import com.example.mitego.model.Point
-import com.example.mitego.model.PointState
-import com.example.mitego.model.PointType
-import com.example.mitego.ui.theme.GoldAccent
+import com.cacamites.app.model.Point
+import com.cacamites.app.model.PointState
+import com.cacamites.app.model.PointType
+import com.cacamites.app.ui.theme.GoldAccent
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 
@@ -66,3 +66,4 @@ fun addMarkersToMap(
     
     mapView.invalidate()
 }
+

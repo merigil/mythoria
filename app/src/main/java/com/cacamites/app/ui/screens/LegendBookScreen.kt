@@ -1,4 +1,4 @@
-package com.example.mitego.ui.screens
+package com.cacamites.app.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -38,10 +38,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.mitego.model.Card
-import com.example.mitego.repository.GameRepository
-import com.example.mitego.ui.theme.ForestGreen
-import com.example.mitego.ui.theme.GoldAccent
+import com.cacamites.app.model.Card
+import com.cacamites.app.repository.GameRepository
+import com.cacamites.app.ui.theme.ForestGreen
+import com.cacamites.app.ui.theme.GoldAccent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -169,3 +169,4 @@ fun LegendCardItem(
         }
     }
 }
+

@@ -1,4 +1,4 @@
-package com.example.mitego.model
+package com.cacamites.app.model
 
 import org.osmdroid.util.GeoPoint
 
@@ -39,3 +39,4 @@ data class Point(
     val isAlwaysInvisible: Boolean = false,
     val quiz: Quiz? = null
 )
+

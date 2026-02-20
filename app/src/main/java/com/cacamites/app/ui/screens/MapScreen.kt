@@ -1,4 +1,4 @@
-package com.example.mitego.ui.screens
+package com.cacamites.app.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -21,10 +21,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import com.example.mitego.model.GameStatus
-import com.example.mitego.model.Point
-import com.example.mitego.repository.GameRepository
-import com.example.mitego.ui.components.addMarkersToMap
+import com.cacamites.app.model.GameStatus
+import com.cacamites.app.model.Point
+import com.cacamites.app.repository.GameRepository
+import com.cacamites.app.ui.components.addMarkersToMap
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
@@ -191,3 +191,4 @@ fun GameResultOverlay(title: String, subtitle: String, color: Color) {
         }
     }
 }
+

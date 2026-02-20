@@ -1,4 +1,4 @@
-package com.example.mitego.ui.screens
+package com.cacamites.app.ui.screens
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -178,3 +178,4 @@ fun OnboardingPageContent(
         }
     }
 }
+

@@ -1,4 +1,4 @@
-package com.example.mitego.ui.screens
+package com.cacamites.app.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -39,7 +39,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import com.example.mitego.ui.theme.ForestGreen
+import com.cacamites.app.ui.theme.ForestGreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -249,3 +249,4 @@ fun LoginScreen(
         )
     }
 }
+

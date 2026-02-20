@@ -1,4 +1,4 @@
-package com.example.mitego.model
+package com.cacamites.app.model
 
 enum class GameStatus {
     WAITING_TO_START,
@@ -27,3 +27,4 @@ data class GameState(
     val timerSecondsRemaining: Long? = null
 >>>>>>> 0f8a79eccb4579cba4ceeea3a5fbad3eed57fda4
 )
+

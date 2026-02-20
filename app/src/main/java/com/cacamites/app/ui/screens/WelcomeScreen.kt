@@ -1,4 +1,4 @@
-package com.example.mitego.ui.screens
+package com.cacamites.app.ui.screens
 
 import android.Manifest
 import androidx.compose.foundation.Image
@@ -24,7 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mitego.R
+import com.cacamites.app.R
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState

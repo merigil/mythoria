@@ -1,4 +1,4 @@
-package com.example.mitego.model
+package com.cacamites.app.model
 
 data class Adventure(
     val id: String,
@@ -9,3 +9,4 @@ data class Adventure(
     val cards: List<Card>,
     val isActive: Boolean = true // Whether it is playable
 )
+

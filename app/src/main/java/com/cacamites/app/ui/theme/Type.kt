@@ -1,4 +1,4 @@
-package com.example.mitego.ui.theme
+package com.cacamites.app.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.graphics.Color
@@ -7,7 +7,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import com.example.mitego.R
+import com.cacamites.app.R
 
 // Local Fonts
 val Merienda = FontFamily(

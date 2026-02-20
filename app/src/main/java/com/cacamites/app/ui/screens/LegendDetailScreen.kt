@@ -1,4 +1,4 @@
-package com.example.mitego.ui.screens
+package com.cacamites.app.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -33,10 +33,10 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import com.example.mitego.model.Card
-import com.example.mitego.repository.GameRepository
-import com.example.mitego.ui.theme.ForestGreen
-import com.example.mitego.ui.theme.GoldAccent
+import com.cacamites.app.model.Card
+import com.cacamites.app.repository.GameRepository
+import com.cacamites.app.ui.theme.ForestGreen
+import com.cacamites.app.ui.theme.GoldAccent
 
 @Composable
 fun LegendDetailScreen(
@@ -171,3 +171,4 @@ fun LegendDetailScreen(
         }
     }
 }
+

@@ -23,3 +23,4 @@ data class ResultatJoc(
     val lon: Double,
     val timestamp: Long
 )
+

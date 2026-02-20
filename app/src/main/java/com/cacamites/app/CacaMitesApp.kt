@@ -14,3 +14,4 @@ class CacaMitesApp : Application() {
         Configuration.getInstance().osmdroidTileCache = File(Configuration.getInstance().osmdroidBasePath, "tile")
     }
 }
+

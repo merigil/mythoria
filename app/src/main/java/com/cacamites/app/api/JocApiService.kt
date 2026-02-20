@@ -36,3 +36,4 @@ interface JocApiService {
     @GET("api/ranking/top")
     suspend fun getTopRanking(): List<Map<String, Any>>
 }
+
