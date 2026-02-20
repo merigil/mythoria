@@ -37,9 +37,32 @@ import com.example.mitego.ui.theme.GoldAccent
 @Composable
 fun LegendDetailScreen(
     card: Card,
-    onClose: () -> Unit
+    onClose: () -> Unit,
+    repository: GameRepository // Afegim el repository per accedir a la proximitat
 ) {
     val scrollState = rememberScrollState()
+    val userLocation by repository.userLocation.collectAsState()
+    val points by repository.points.collectAsState()
+    
+    // Trobem el punt corresponent a aquesta carta per saber-ne les coordenades
+    val point = remember(card.id, points) {
+        val pointId = if (card.id.startsWith("c_s_")) card.id.removePrefix("c_") else if (card.id.startsWith("c_")) "p_" + card.id.removePrefix("c_") else card.id
+        points.find { it.id == pointId }
+    }
+
+    // Lògica de proximitat
+    val proximityState = remember(userLocation, point) {
+        if (userLocation != null && point != null) {
+            repository.checkProximity(
+                userLocation!!.latitude, userLocation!!.longitude,
+                point.coordinate.latitude, point.coordinate.longitude
+            )
+        } else {
+            Pair(false, -1f)
+        }
+    }
+    
+    val (isNear, distance) = proximityState
 
     Column(
         modifier = Modifier
@@ -54,10 +77,6 @@ fun LegendDetailScreen(
                 .height(250.dp)
                 .background(ForestGreen)
         ) {
-            // If we had a real image resource:
-            // Image(painter = ..., contentDescription = null, contentScale = ContentScale.Crop)
-            
-            // Close Button Overlay
             IconButton(
                 onClick = onClose,
                 modifier = Modifier
@@ -78,14 +97,14 @@ fun LegendDetailScreen(
                 text = card.title,
                 style = MaterialTheme.typography.displayMedium.copy(
                     fontWeight = FontWeight.Bold,
-                    color = Color.Red // DEBUG: Xivato
+                    color = ForestGreen
                 )
             )
             
             Spacer(modifier = Modifier.height(8.dp))
             
             Text(
-                text = card.type.uppercase(), // e.g. "LLEGENDA"
+                text = card.type.uppercase(),
                 style = MaterialTheme.typography.labelMedium.copy(
                     color = GoldAccent,
                     fontWeight = FontWeight.Bold,
@@ -104,6 +123,27 @@ fun LegendDetailScreen(
             )
             
             Spacer(modifier = Modifier.height(32.dp))
+            
+            // BOTÓ DINÀMIC DE JOC (Basat en proximitat)
+            if (point != null) {
+                Button(
+                    onClick = { /* Aquí aniria la lògica per obrir el minijoc o acció */ },
+                    modifier = Modifier.fillMaxWidth().height(56.dp),
+                    enabled = isNear,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (isNear) Color(0xFFec6209) else Color.Gray,
+                        disabledContainerColor = Color.LightGray
+                    )
+                ) {
+                    if (isNear) {
+                        Text("COMPENÇA LA LLEGENDA!", fontWeight = FontWeight.Bold)
+                    } else {
+                        val distText = if (distance >= 0) " (${distance.toInt()}m)" else ""
+                        Text("ACOSTA'T MÉS PER JUGAR$distText", fontWeight = FontWeight.Bold)
+                    }
+                }
+                Spacer(modifier = Modifier.height(12.dp))
+            }
             
             Button(
                 onClick = onClose,

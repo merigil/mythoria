@@ -17,7 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.mitego.R
+import com.cacamites.app.R
 import com.example.mitego.ui.theme.GoldAccent
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -44,13 +44,13 @@ fun WelcomeScreen(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Benvingut a MiteGo!",
+            text = "Benvingut a CaçaMites!",
             style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.primary
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = stringResource(R.string.permission_required),
+            text = "Aquesta aplicació necessita permisos d'ubicació per funcionar.",
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center
         )
@@ -60,7 +60,7 @@ fun WelcomeScreen(
             colors = ButtonDefaults.buttonColors(containerColor = GoldAccent)
         ) {
             Text(
-                text = stringResource(R.string.grant_permission),
+                text = "CONCEDEIX PERMISOS",
                 color = MaterialTheme.colorScheme.onSecondary
             )
         }

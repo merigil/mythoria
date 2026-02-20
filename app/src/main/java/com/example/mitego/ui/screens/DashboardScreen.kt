@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import com.example.mitego.model.Adventure
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
@@ -20,11 +19,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mitego.ui.theme.ForestGreen
 
+data class AdventureItem(
+    val id: String,
+    val title: String,
+    val isActive: Boolean
+)
+
 @Composable
 fun DashboardScreen(
-    adventures: List<Adventure>,
-    onAdventureSelected: (Adventure) -> Unit
+    onAdventureSelected: (String) -> Unit
 ) {
+    val adventures = listOf(
+        AdventureItem("BARO", "El Baró de Savassona", true),
+        AdventureItem("SERPENT", "La Serpent de Manlleu", true),
+        AdventureItem("ALTRES", "Més llegendes...", false)
+    )
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -32,8 +42,8 @@ fun DashboardScreen(
             .padding(16.dp)
     ) {
         Text(
-            text = "El Llibre",
-            style = MaterialTheme.typography.headlineLarge.copy(
+            text = "El Llibre de Llegendes",
+            style = MaterialTheme.typography.headlineMedium.copy(
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             ),
@@ -47,7 +57,7 @@ fun DashboardScreen(
                 AdventureCard(
                     title = adventure.title,
                     isActive = adventure.isActive,
-                    onClick = { onAdventureSelected(adventure) }
+                    onClick = { onAdventureSelected(adventure.id) }
                 )
             }
         }
@@ -63,7 +73,7 @@ fun AdventureCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(120.dp)
+            .height(100.dp)
             .clickable(enabled = isActive) { onClick() },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
@@ -78,22 +88,22 @@ fun AdventureCard(
                     fontWeight = FontWeight.Bold,
                     color = if (isActive) ForestGreen else Color.DarkGray
                 ),
-                modifier = Modifier.align(Alignment.TopStart)
+                modifier = Modifier.align(Alignment.CenterStart)
             )
 
             if (isActive) {
                 Icon(
                     imageVector = Icons.Default.Map,
-                    contentDescription = "Active",
+                    contentDescription = "Activa",
                     tint = ForestGreen,
-                    modifier = Modifier.align(Alignment.BottomEnd).size(32.dp)
+                    modifier = Modifier.align(Alignment.CenterEnd).size(32.dp)
                 )
             } else {
                 Icon(
                     imageVector = Icons.Default.Lock,
-                    contentDescription = "Locked",
+                    contentDescription = "Bloquejada",
                     tint = Color.Gray,
-                    modifier = Modifier.align(Alignment.BottomEnd).size(32.dp)
+                    modifier = Modifier.align(Alignment.CenterEnd).size(32.dp)
                 )
             }
         }

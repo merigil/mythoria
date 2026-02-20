@@ -77,28 +77,44 @@ fastify.get('/api/llegendes/proximitat', async (request, reply) => {
 
 /**
  * Finalitzar joc: Registre en DB + Redis Update + Broadcast
+ * Seguretat: Valida HMAC i Proximitat GPS (ST_DWithin)
  */
 fastify.post('/api/joc/finalitzar', { preHandler: [fastify.validarHMAC] }, async (request, reply) => {
-    const { jugador_id, llegenda_id, puntuacio } = request.body;
+    const { jugador_id, llegenda_id, puntuacio, lat, lon } = request.body;
+
+    if (!lat || !lon) {
+        return reply.code(400).send({ error: 'Falten coordenades GPS per validar la proximitat' });
+    }
 
     try {
-        // 1. Persistència en PostgreSQL (Log de seguretat)
+        // 1. Validar proximitat real al servidor (Anti-Cheat)
+        const proximityQuery = `
+            SELECT id FROM llegendes 
+            WHERE id = $1 AND ST_DWithin(posicio, ST_SetSRID(ST_MakePoint($2, $3), 4326)::geography, radi_activacio)
+        `;
+        const proximityCheck = await fastify.pg.query(proximityQuery, [llegenda_id, lon, lat]);
+
+        if (proximityCheck.rows.length === 0) {
+            return reply.code(403).send({ error: 'Validació GPS fallida: Estàs massa lluny de la llegenda' });
+        }
+
+        // 2. Persistència en PostgreSQL (Log de seguretat)
         await fastify.pg.query(
             'INSERT INTO partides (jugador_id, llegenda_id, puntuacio, guanyada, signatura_valida) VALUES ($1, $2, $3, $4, $5)',
             [jugador_id, llegenda_id, puntuacio, true, true]
         );
 
-        // 2. Incrementar punts en Redis (Sorted Set per a rànquing d'alta velocitat)
+        // 3. Incrementar punts en Redis (Sorted Set per a rànquing d'alta velocitat)
         const nousPunts = await redis.zincrby('ranking_global', puntuacio, jugador_id);
 
-        // 3. Obtenir nickname per al broadcast
+        // 4. Obtenir nickname per al broadcast
         const { rows } = await fastify.pg.query('SELECT nickname FROM jugadors WHERE id = $1', [jugador_id]);
         const nickname = rows[0]?.nickname || 'Anònim';
 
-        // 4. Actualitzar PostgreSQL asíncronament (per consistència)
+        // 5. Actualitzar PostgreSQL asíncronament (per consistència)
         fastify.pg.query('UPDATE jugadors SET punts_globals = $1 WHERE id = $2', [nousPunts, jugador_id]);
 
-        // 5. Broadcast en temps real a tots els connectats
+        // 6. Broadcast en temps real a tots els connectats
         fastify.websocketServer.clients.forEach(client => {
             if (client.readyState === 1) { // OPEN
                 client.send(JSON.stringify({
