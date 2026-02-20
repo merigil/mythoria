@@ -30,7 +30,11 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import com.example.mitego.model.Card
+import com.example.mitego.repository.GameRepository
 import com.example.mitego.ui.theme.ForestGreen
 import com.example.mitego.ui.theme.GoldAccent
 

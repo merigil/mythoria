@@ -4,7 +4,7 @@ const http = require('http');
 const API_URL = 'http://localhost:3000';
 const SECRET_KEY = 'clau-secreta-per-defecte';
 
-async fun request(method, path, body = null) {
+async function request(method, path, body = null) {
     return new Promise((resolve, reject) => {
         const url = new URL(`${API_URL}${path}`);
         const options = {
