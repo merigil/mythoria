@@ -35,6 +35,12 @@ class GameRepository {
     private val _userLocation = MutableStateFlow<GeoPoint?>(null)
     val userLocation: StateFlow<GeoPoint?> = _userLocation.asStateFlow()
 
+<<<<<<< HEAD
+=======
+    private val _isUserMock = MutableStateFlow(false)
+    val isUserMock: StateFlow<Boolean> = _isUserMock.asStateFlow()
+
+>>>>>>> 0f8a79eccb4579cba4ceeea3a5fbad3eed57fda4
     private val _cards = MutableStateFlow<List<Card>>(emptyList())
     val cards: StateFlow<List<Card>> = _cards.asStateFlow()
 
@@ -71,6 +77,7 @@ class GameRepository {
             Point("p_baronessa", "La Baronessa", GeoPoint(41.953683, 2.335898), PointType.MANDATORY, score = 12, isMandatory = true),
             Point("p_jove", "El Jove criat", GeoPoint(41.9538348, 2.336077), PointType.MANDATORY, score = 12, isMandatory = true),
             Point("p_espassa", "L'Espassa Màgica", GeoPoint(41.954496, 2.336380), PointType.OBJECT, score = 30, isMandatory = true), 
+<<<<<<< HEAD
             Point("p_pastora", "La Pastora", GeoPoint(41.956444, 2.340611), PointType.NARRATIVE, score = 10),
             Point("p_home_cami", "L'Home del Camí", GeoPoint(41.956237, 2.339180), PointType.NARRATIVE, score = 10),
             Point("p_bassa", "La Bassa de la Teuleria i el follet", GeoPoint(41.955057, 2.337857), PointType.NARRATIVE, score = 15),
@@ -105,6 +112,14 @@ class GameRepository {
             Point("s_rubi", "El rubí de la serpent", GeoPoint(41.930170, 2.254787), PointType.HIDDEN_OBJECT, PointState.LOCKED, score = 0, isAlwaysInvisible = false),
             Point("s_terrissaire", "El terrissaire", GeoPoint(41.930406, 2.254734), PointType.NARRATIVE, PointState.LOCKED, score = 0),
             Point("s_remeiera", "La vella remeiera", GeoPoint(41.930389, 2.254480), PointType.NARRATIVE, PointState.LOCKED, score = 0),
+=======
+            Point("p_baro", "El Baró", GeoPoint(41.953403, 2.336365), PointType.ENEMY, score = 0, isMandatory = true, state = PointState.LOCKED),
+            
+            // MANLLEU
+            Point("s_start", "Plaça de Fra Bernadí", GeoPoint(41.930675, 2.254059), PointType.NARRATIVE, PointState.LOCKED, score = 0),
+            Point("s_vaquer", "El vaquer", GeoPoint(41.930153, 2.254478), PointType.NARRATIVE, PointState.LOCKED, score = 0),
+            Point("s_rubi", "El rubí de la serpent", GeoPoint(41.930170, 2.254787), PointType.HIDDEN_OBJECT, PointState.LOCKED, score = 0, isAlwaysInvisible = false),
+>>>>>>> 0f8a79eccb4579cba4ceeea3a5fbad3eed57fda4
             Point("s_morter", "El Morter", GeoPoint(41.930555, 2.254905), PointType.HIDDEN_OBJECT, PointState.LOCKED, score = 0, isAlwaysInvisible = false),
             Point("s_final", "La plaça", GeoPoint(41.930523, 2.254483), PointType.NARRATIVE, PointState.LOCKED, score = 0)
         )
@@ -112,6 +127,7 @@ class GameRepository {
 
     private fun createCards(): List<Card> {
         return listOf(
+<<<<<<< HEAD
             Card("c_start", "Punt d'Inici", "Benvingut! Has desbloquejat l'aventura.", "", "foto_castell_del_baro", true),
             Card("c_baronessa", "La Baronessa", "«El meu espòs mai no ha estat home de cor noble. Els seus gelos ferotges i el seu afany de possessió m’han tinguda captiva entre els murs del castell...»", "Llegenda", "la_baronessa", true),
             Card("c_jove", "El Jove criat", "«Fidel al meu senyor Baró he estat des que tinc memòria...»", "Llegenda", "el_jove", true),
@@ -127,6 +143,10 @@ class GameRepository {
             Card("c_s_remeiera", "La vella remeiera", "«Escolteu-me, fills i filles: el morter gegant s’amaga prop d’aquí, amagat sota les tres creus de la font, just sota l’església...»", "Llegenda", "serpent_la_remeiera", true),
             Card("c_s_morter", "El Morter", "«Heu trobat el morter amagat sota les tres creus, però això només és el començament de la vostra prova. La Serp, enfurismada com mai, fumeja i colpeja amb força terrible...»", "Objecte", "serpent_morter", true),
             Card("c_s_final", "Victòria a la Plaça", "«Heu resistit, valents, i la victòria és vostra! El rubí us pertany, i tot el poble, ple d’agraïment, us ofereix un cofre on, dins, descansa un antic pergamí que conté la llegenda sencera.»", "Victòria", "victoria_serpent", true)
+=======
+            Card("c_s_rubi", "El rubí de la serpent", "Has trobat el rubí!", "Objecte", "el_rubi", true),
+            Card("c_s_morter", "El Morter", "Has trobat el morter!", "Objecte", "serpent_morter", true)
+>>>>>>> 0f8a79eccb4579cba4ceeea3a5fbad3eed57fda4
         )
     }
 
@@ -176,6 +196,18 @@ class GameRepository {
 
     fun updateUserLocation(lat: Double, lng: Double) {
         _userLocation.value = GeoPoint(lat, lng)
+    }
+
+    fun checkProximity(userLat: Double, userLng: Double, targetLat: Double, targetLng: Double, threshold: Float = 50f): Pair<Boolean, Float> {
+        val userLoc = Location("user").apply { latitude = userLat; longitude = userLng }
+        val targetLoc = Location("target").apply { latitude = targetLat; longitude = targetLng }
+        val distance = userLoc.distanceTo(targetLoc)
+        return Pair(distance <= threshold, distance)
+    }
+
+    fun updateUserLocation(lat: Double, lng: Double, isMock: Boolean = false) {
+        _userLocation.value = GeoPoint(lat, lng)
+        _isUserMock.value = isMock
     }
 
     fun checkProximity(userLat: Double, userLng: Double, targetLat: Double, targetLng: Double, threshold: Float = 50f): Pair<Boolean, Float> {

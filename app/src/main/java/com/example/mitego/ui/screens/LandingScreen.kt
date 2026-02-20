@@ -1,21 +1,28 @@
 package com.example.mitego.ui.screens
 
+<<<<<<< HEAD
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+=======
+import androidx.compose.foundation.background
+>>>>>>> 0f8a79eccb4579cba4ceeea3a5fbad3eed57fda4
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+<<<<<<< HEAD
 import androidx.compose.material3.Text
+=======
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Terrain
+import androidx.compose.material3.Icon
+>>>>>>> 0f8a79eccb4579cba4ceeea3a5fbad3eed57fda4
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+<<<<<<< HEAD
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -26,6 +33,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mitego.R
 import com.example.mitego.ui.theme.Merienda
+=======
+import androidx.compose.ui.unit.dp
+import com.example.mitego.ui.theme.ForestGreen
+>>>>>>> 0f8a79eccb4579cba4ceeea3a5fbad3eed57fda4
 import kotlinx.coroutines.delay
 
 @Composable
@@ -40,6 +51,7 @@ fun LandingScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
+<<<<<<< HEAD
             .background(Color.White)
             .clickable { onNavigateToMap() }
     ) {
@@ -111,5 +123,17 @@ fun LandingScreen(
             
             Spacer(modifier = Modifier.height(30.dp))
         }
+=======
+            .background(Color.White),
+        contentAlignment = Alignment.Center
+    ) {
+        // Logo
+        Icon(
+            imageVector = Icons.Default.Terrain,
+            contentDescription = "CaçaMites Logo",
+            tint = ForestGreen,
+            modifier = Modifier.size(150.dp)
+        )
+>>>>>>> 0f8a79eccb4579cba4ceeea3a5fbad3eed57fda4
     }
 }

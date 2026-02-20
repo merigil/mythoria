@@ -1,39 +1,27 @@
 package com.example.mitego.ui.screens
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Face
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.*
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import com.example.mitego.model.GameStatus
 import com.example.mitego.model.Point
 import com.example.mitego.repository.GameRepository
 import com.example.mitego.ui.components.addMarkersToMap
@@ -51,20 +39,32 @@ fun MapScreen(
 ) {
     val context = LocalContext.current
     val mapView = remember { MapView(context) }
-    val points by repository.points.collectAsState(initial = emptyList())
+    val points by repository.points.collectAsState()
     val gameState by repository.gameState.collectAsState()
     
-    // Setup Map Logic (Kept from original)
     LaunchedEffect(Unit) {
         mapView.setTileSource(TileSourceFactory.MAPNIK)
         mapView.setMultiTouchControls(true)
         mapView.controller.setZoom(18.0)
-        mapView.controller.setCenter(GeoPoint(41.9323395951151, 2.252533598712291)) // Start at Test Point
+        mapView.controller.setCenter(GeoPoint(41.930675, 2.254059)) // Inici Manlleu
         
-        val locationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(context), mapView)
+        val locationProvider = GpsMyLocationProvider(context)
+        val locationOverlay = object : MyLocationNewOverlay(locationProvider, mapView) {
+            override fun onLocationChanged(location: android.location.Location?, source: org.osmdroid.views.overlay.mylocation.IMyLocationProvider?) {
+                super.onLocationChanged(location, source)
+                location?.let {
+                    val isMock = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        it.isMock
+                    } else {
+                        @Suppress("DEPRECATION")
+                        it.isFromMockProvider
+                    }
+                    repository.updateUserLocation(it.latitude, it.longitude, isMock)
+                }
+            }
+        }
         locationOverlay.enableMyLocation()
         locationOverlay.enableFollowLocation()
-        locationOverlay.isDrawAccuracyEnabled = true
         mapView.overlays.add(locationOverlay)
     }
 
@@ -74,34 +74,27 @@ fun MapScreen(
         }
     }
 
-    // New UI Shell wrapping the Map
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = Color.White)
-    ) {
-        AndroidView(
-            factory = { mapView },
-            modifier = Modifier.fillMaxSize()
-        )
+    Box(modifier = Modifier.fillMaxSize().background(color = Color.White)) {
+        AndroidView(factory = { mapView }, modifier = Modifier.fillMaxSize())
 
-        // TOP APP BAR - SCORE & TIMER
+        // BARRA SUPERIOR - PUNTUACIÓ I TEMPS
         TopApBarWithStats(
-            score = gameState.currentScore,
-            timeRemaining = gameState.timeRemainingMs,
-            isTimerActive = gameState.isTimerActive,
+            score = gameState.totalScore,
+            timerSeconds = gameState.timerSecondsRemaining,
             modifier = Modifier.align(Alignment.TopCenter)
         )
 
-        // BOTTOM BAR - INVENTORY
+        // BARRA INFERIOR - INVENTARI
         InventoryBottomBar(
-            collectedItems = gameState.keyItemsCollected,
+            inventory = gameState.inventory,
             modifier = Modifier.align(Alignment.BottomCenter)
         )
         
-        // GAME OVER / WIN OVERLAY
-        gameState.gameResult?.let { result ->
-            GameResultOverlay(result = result)
+        // PANTALLES DE FINAL DE JOC
+        if (gameState.status == GameStatus.WON) {
+            GameResultOverlay(title = "VICTÒRIA!", subtitle = "Has superat el repte!", color = Color.Green)
+        } else if (gameState.status == GameStatus.LOST) {
+            GameResultOverlay(title = "GAME OVER", subtitle = "El temps s'ha acabat.", color = Color.Red)
         }
     }
 }
@@ -109,8 +102,7 @@ fun MapScreen(
 @Composable
 fun TopApBarWithStats(
     score: Int,
-    timeRemaining: Long,
-    isTimerActive: Boolean,
+    timerSeconds: Long?,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -125,43 +117,34 @@ fun TopApBarWithStats(
     ) {
         Column {
             Text(
-                text = "Vida: $score",
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    color = if (score > 100) Color(0xFF4CAF50) else Color.Black
-                )
-            )
-            Text(
-                text = "Objectiu: >100",
-                style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray)
+                text = "Punts: $score",
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
             )
         }
         
-        if (isTimerActive) {
-            val minutes = (timeRemaining / 1000) / 60
-            val seconds = (timeRemaining / 1000) % 60
+        timerSeconds?.let { seconds ->
+            val min = seconds / 60
+            val sec = seconds % 60
             Text(
-                text = String.format("%02d:%02d", minutes, seconds),
+                text = String.format("%02d:%02d", min, sec),
                 style = MaterialTheme.typography.headlineMedium.copy(
                     fontWeight = FontWeight.Bold,
                     color = Color.Red
                 )
             )
-        } else {
-             Text(
-                text = "CaçaMites",
-                style = MaterialTheme.typography.titleLarge.copy(
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xffec6209)
-                )
+        } ?: Text(
+            text = "CaçaMites",
+            style = MaterialTheme.typography.titleLarge.copy(
+                fontWeight = FontWeight.Bold,
+                color = Color(0xffec6209)
             )
-        }
+        )
     }
 }
 
 @Composable
 fun InventoryBottomBar(
-    collectedItems: List<String>,
+    inventory: Set<String>,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -173,9 +156,8 @@ fun InventoryBottomBar(
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        InventorySlot(icon = Icons.Default.Person, label = "Jove", isCollected = collectedItems.contains("p_jove"))
-        InventorySlot(icon = Icons.Default.Face, label = "Baronessa", isCollected = collectedItems.contains("p_baronessa"))
-        InventorySlot(icon = Icons.Default.Star, label = "Espasa", isCollected = collectedItems.contains("p_espasa"))
+        InventorySlot(icon = Icons.Default.Person, label = "Personatge", isCollected = inventory.isNotEmpty())
+        InventorySlot(icon = Icons.Default.Star, label = "Objectes", isCollected = inventory.contains("espassa") || inventory.contains("rubi"))
     }
 }
 
@@ -197,64 +179,15 @@ fun InventorySlot(icon: androidx.compose.ui.graphics.vector.ImageVector, label: 
 }
 
 @Composable
-fun GameResultOverlay(result: com.example.mitego.model.GameResult) {
+fun GameResultOverlay(title: String, subtitle: String, color: Color) {
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.8f)),
+        modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.8f)),
         contentAlignment = Alignment.Center
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(32.dp)
-        ) {
-            val (title, color) = when(result) {
-                com.example.mitego.model.GameResult.WIN -> "VICTÒRIA!" to Color.Green
-                else -> "GAME OVER" to Color.Red
-            }
-            
-            Text(
-                text = title,
-                style = MaterialTheme.typography.displayMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    color = color
-                )
-            )
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(text = title, style = MaterialTheme.typography.displayMedium.copy(fontWeight = FontWeight.Bold, color = color))
             Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = if (result == com.example.mitego.model.GameResult.WIN) 
-                    "Has vençut al Baró i alliberat la vall!" 
-                else "El temps s'ha acabat o no tens prou força.",
-                style = MaterialTheme.typography.bodyLarge.copy(color = Color.White),
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center
-            )
-        }
-    }
-}
-
-@Composable
-fun Property1Default(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier
-            .height(58.dp)
-            .background(color = Color.White.copy(alpha = 0.9f)) // Increased alpha for visibility
-    ) {
-        // Simulating the footer icons row
-        Row(
-            modifier = Modifier.fillMaxSize(),
-            horizontalArrangement = Arrangement.SpaceAround,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = Icons.Default.AccountCircle, // Placeholder
-                contentDescription = "User",
-                tint = Color(0xff1c1b1f),
-                modifier = Modifier.size(24.dp)
-            )
-            // Other placeholders for footer icons
-            Box(modifier = Modifier.size(24.dp).background(Color.LightGray, RoundedCornerShape(4.dp)))
-            Box(modifier = Modifier.size(24.dp).background(Color.LightGray, RoundedCornerShape(4.dp)))
-            Box(modifier = Modifier.size(24.dp).background(Color.LightGray, RoundedCornerShape(4.dp)))
+            Text(text = subtitle, style = MaterialTheme.typography.bodyLarge.copy(color = Color.White))
         }
     }
 }

@@ -1,0 +1,19 @@
+{
+    "name": "cacamites-api",
+    "version": "1.0.0",
+    "description": "API d'alta escalabilitat per al joc CaçaMites amb Fastify i Redis",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js",
+        "dev": "nodemon index.js"
+    },
+    "dependencies": {
+        "@fastify/cors": "^8.3.0",
+        "@fastify/postgres": "^5.2.0",
+        "@fastify/websocket": "^8.2.0",
+        "dotenv": "^16.4.1",
+        "fastify": "^4.21.0",
+        "ioredis": "^5.3.2",
+        "pg": "^8.11.3"
+    }
+}

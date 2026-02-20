@@ -10,9 +10,9 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven { url = uri("https://jitpack.io") } // Often needed for OSMDroid or other libs
+        maven { url = uri("https://jitpack.io") }
     }
 }
 
-rootProject.name = "MiteGo"
+rootProject.name = "CaçaMites"
 include(":app")

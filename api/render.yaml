@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: cacamites-api
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: DATABASE_URL
+        fromDatabase:
+          name: cacamites-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: cacamites-redis
+          property: connectionString
+      - key: HMAC_SECRET_KEY
+        generateValue: true
+
+databases:
+  - name: cacamites-db
+    databaseName: cacamites
+    user: cacamites_user
+    plan: free
+
+redis:
+  - name: cacamites-redis
+    plan: free

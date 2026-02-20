@@ -1,4 +1,4 @@
-package com.example.mitego
+package com.cacamites.app
 
 import android.app.Application
 import org.osmdroid.config.Configuration

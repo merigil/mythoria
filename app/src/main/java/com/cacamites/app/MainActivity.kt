@@ -1,4 +1,4 @@
-package com.example.mitego
+package com.cacamites.app
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

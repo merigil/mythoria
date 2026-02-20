@@ -1,0 +1,22 @@
+[
+    {
+        "id": 1,
+        "titol": "Llegenda del Pont",
+        "distancia_metres": 12.5,
+        "activa": true,
+        "config": {
+            "tipus": "quiz",
+            "temps": 60
+        }
+    },
+    {
+        "id": 4,
+        "titol": "La Torre Vigilant",
+        "distancia_metres": 145.0,
+        "activa": false,
+        "config": {
+            "tipus": "velocitat",
+            "metres": 100
+        }
+    }
+]

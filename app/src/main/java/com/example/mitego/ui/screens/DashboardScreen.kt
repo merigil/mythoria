@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import com.example.mitego.model.Adventure
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
@@ -21,11 +20,22 @@ import androidx.compose.ui.unit.sp
 import com.example.mitego.ui.theme.ForestGreen
 import com.example.mitego.ui.theme.GoldAccent
 
+data class AdventureItem(
+    val id: String,
+    val title: String,
+    val isActive: Boolean
+)
+
 @Composable
 fun DashboardScreen(
-    adventures: List<Adventure>,
-    onAdventureSelected: (Adventure) -> Unit
+    onAdventureSelected: (String) -> Unit
 ) {
+    val adventures = listOf(
+        AdventureItem("BARO", "El Baró de Savassona", true),
+        AdventureItem("SERPENT", "La Serpent de Manlleu", true),
+        AdventureItem("ALTRES", "Més llegendes...", false)
+    )
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -33,10 +43,19 @@ fun DashboardScreen(
             .padding(24.dp)
     ) {
         Text(
+<<<<<<< HEAD
             text = "Explora les LlegendeS",
             style = MaterialTheme.typography.headlineMedium,
             color = Color(0xFF202020),
             modifier = Modifier.padding(bottom = 32.dp, top = 16.dp)
+=======
+            text = "El Llibre de Llegendes",
+            style = MaterialTheme.typography.headlineMedium.copy(
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            ),
+            modifier = Modifier.padding(vertical = 24.dp)
+>>>>>>> 0f8a79eccb4579cba4ceeea3a5fbad3eed57fda4
         )
 
         LazyColumn(
@@ -47,7 +66,7 @@ fun DashboardScreen(
                 AdventureCard(
                     title = adventure.title,
                     isActive = adventure.isActive,
-                    onClick = { onAdventureSelected(adventure) }
+                    onClick = { onAdventureSelected(adventure.id) }
                 )
             }
         }
@@ -63,7 +82,11 @@ fun AdventureCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
+<<<<<<< HEAD
             .height(130.dp)
+=======
+            .height(100.dp)
+>>>>>>> 0f8a79eccb4579cba4ceeea3a5fbad3eed57fda4
             .clickable(enabled = isActive) { onClick() },
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
@@ -71,6 +94,7 @@ fun AdventureCard(
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = if (isActive) 6.dp else 0.dp)
     ) {
+<<<<<<< HEAD
         Box(modifier = Modifier.fillMaxSize().padding(20.dp)) {
             Column(modifier = Modifier.align(Alignment.CenterStart)) {
                 Text(
@@ -87,20 +111,41 @@ fun AdventureCard(
                     )
                 }
             }
+=======
+        Box(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleLarge.copy(
+                    fontWeight = FontWeight.Bold,
+                    color = if (isActive) ForestGreen else Color.DarkGray
+                ),
+                modifier = Modifier.align(Alignment.CenterStart)
+            )
+>>>>>>> 0f8a79eccb4579cba4ceeea3a5fbad3eed57fda4
 
             if (isActive) {
                 Icon(
                     imageVector = Icons.Default.Map,
+<<<<<<< HEAD
                     contentDescription = "Active",
                     tint = GoldAccent,
                     modifier = Modifier.align(Alignment.BottomEnd).size(36.dp)
+=======
+                    contentDescription = "Activa",
+                    tint = ForestGreen,
+                    modifier = Modifier.align(Alignment.CenterEnd).size(32.dp)
+>>>>>>> 0f8a79eccb4579cba4ceeea3a5fbad3eed57fda4
                 )
             } else {
                 Icon(
                     imageVector = Icons.Default.Lock,
-                    contentDescription = "Locked",
+                    contentDescription = "Bloquejada",
                     tint = Color.Gray,
+<<<<<<< HEAD
                     modifier = Modifier.align(Alignment.BottomEnd).size(28.dp)
+=======
+                    modifier = Modifier.align(Alignment.CenterEnd).size(32.dp)
+>>>>>>> 0f8a79eccb4579cba4ceeea3a5fbad3eed57fda4
                 )
             }
         }
