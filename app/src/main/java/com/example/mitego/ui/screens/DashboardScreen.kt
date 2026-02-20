@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mitego.ui.theme.ForestGreen
+import com.example.mitego.ui.theme.GoldAccent
 
 @Composable
 fun DashboardScreen(
@@ -28,20 +29,19 @@ fun DashboardScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
-            .padding(16.dp)
+            .background(Color(0xFFF8F9FA))
+            .padding(24.dp)
     ) {
         Text(
-            text = "El Llibre",
-            style = MaterialTheme.typography.headlineLarge.copy(
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
-            ),
-            modifier = Modifier.padding(vertical = 24.dp)
+            text = "Explora les LlegendeS",
+            style = MaterialTheme.typography.headlineMedium,
+            color = Color(0xFF202020),
+            modifier = Modifier.padding(bottom = 32.dp, top = 16.dp)
         )
 
         LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(20.dp),
+            contentPadding = PaddingValues(bottom = 24.dp)
         ) {
             items(adventures) { adventure ->
                 AdventureCard(
@@ -63,37 +63,44 @@ fun AdventureCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(120.dp)
+            .height(130.dp)
             .clickable(enabled = isActive) { onClick() },
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (isActive) Color.White else Color.LightGray
+            containerColor = if (isActive) Color.White else Color(0xFFE0E0E0)
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = if (isActive) 6.dp else 0.dp)
     ) {
-        Box(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleLarge.copy(
-                    fontWeight = FontWeight.Bold,
-                    color = if (isActive) ForestGreen else Color.DarkGray
-                ),
-                modifier = Modifier.align(Alignment.TopStart)
-            )
+        Box(modifier = Modifier.fillMaxSize().padding(20.dp)) {
+            Column(modifier = Modifier.align(Alignment.CenterStart)) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleLarge,
+                    color = if (isActive) ForestGreen else Color.Gray,
+                    fontWeight = FontWeight.Bold
+                )
+                if (!isActive) {
+                    Text(
+                        text = "Aviat disponible",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = Color.Gray
+                    )
+                }
+            }
 
             if (isActive) {
                 Icon(
                     imageVector = Icons.Default.Map,
                     contentDescription = "Active",
-                    tint = ForestGreen,
-                    modifier = Modifier.align(Alignment.BottomEnd).size(32.dp)
+                    tint = GoldAccent,
+                    modifier = Modifier.align(Alignment.BottomEnd).size(36.dp)
                 )
             } else {
                 Icon(
                     imageVector = Icons.Default.Lock,
                     contentDescription = "Locked",
                     tint = Color.Gray,
-                    modifier = Modifier.align(Alignment.BottomEnd).size(32.dp)
+                    modifier = Modifier.align(Alignment.BottomEnd).size(28.dp)
                 )
             }
         }

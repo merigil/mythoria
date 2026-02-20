@@ -13,6 +13,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.graphics.Color
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
@@ -22,39 +23,35 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = ForestGreen,
-    secondary = GoldAccent,
-    tertiary = EarthBrown,
-    background = OffWhite,
-    surface = OffWhite,
+    primary = Color(0xFF0B94FE), // Blau elèctric del 17/02
+    secondary = Color(0xFFF17002), // Taronja vibrant del 17/02
+    tertiary = Color(0xFFCEE2F2),
+    background = Color.White,
+    surface = Color.White,
     onPrimary = Color.White,
-    onSecondary = Color.Black,
+    onSecondary = Color.White,
     onTertiary = Color.White,
-    onBackground = DarkText,
-    onSurface = DarkText,
+    onBackground = Color(0xFF3c4043),
+    onSurface = Color(0xFF3c4043),
 )
 
 @Composable
 fun MiteGoTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = false, // Disabled for consistent branding
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
+    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
+    
     val view = LocalView.current
     if (!view.isInEditMode) {
+        val context = LocalContext.current
         SideEffect {
-            val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
+            val activity = context as? Activity
+            activity?.window?.let { window ->
+                window.statusBarColor = Color.Black.toArgb()
+                WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = false
+            }
         }
     }
 

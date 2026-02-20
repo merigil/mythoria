@@ -3,29 +3,23 @@ package com.example.mitego.ui.theme
 import androidx.compose.material3.Typography
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.googlefonts.Font
-import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.unit.sp
 import com.example.mitego.R
 
-val provider = GoogleFont.Provider(
-    providerAuthority = "com.google.android.gms.fonts",
-    providerPackage = "com.google.android.gms",
-    certificates = R.array.com_google_android_gms_fonts_certs
-)
-
+// Local Fonts
 val Merienda = FontFamily(
-    Font(googleFont = GoogleFont("Merienda"), fontProvider = provider)
+    Font(R.font.merienda)
 )
 
-val Inter = FontFamily(
-    Font(googleFont = GoogleFont("Inter"), fontProvider = provider)
+val Montserrat = FontFamily(
+    Font(R.font.montserrat)
 )
 
 val Typography = Typography(
-    // H1 - H3 equivalent: Headline styles -> Merienda Regular
+    // Headlines -> Merienda
     headlineLarge = TextStyle(
         fontFamily = Merienda,
         fontWeight = FontWeight.Normal,
@@ -51,9 +45,9 @@ val Typography = Typography(
         color = Color(0xFF3c4043)
     ),
 
-    // H4 - H6 equivalent: Title styles -> Inter Bold
+    // Titles -> Montserrat Bold
     titleLarge = TextStyle(
-        fontFamily = Inter,
+        fontFamily = Montserrat,
         fontWeight = FontWeight.Bold,
         fontSize = 22.sp,
         lineHeight = 28.sp,
@@ -61,7 +55,7 @@ val Typography = Typography(
         color = Color(0xFF3c4043)
     ),
     titleMedium = TextStyle(
-        fontFamily = Inter,
+        fontFamily = Montserrat,
         fontWeight = FontWeight.Bold,
         fontSize = 16.sp,
         lineHeight = 24.sp,
@@ -69,7 +63,7 @@ val Typography = Typography(
         color = Color(0xFF3c4043)
     ),
     titleSmall = TextStyle(
-        fontFamily = Inter,
+        fontFamily = Montserrat,
         fontWeight = FontWeight.Bold,
         fontSize = 14.sp,
         lineHeight = 20.sp,
@@ -77,9 +71,9 @@ val Typography = Typography(
         color = Color(0xFF3c4043)
     ),
 
-    // Paragraph: Body styles -> Inter Regular
+    // Body -> Montserrat Regular
     bodyLarge = TextStyle(
-        fontFamily = Inter,
+        fontFamily = Montserrat,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         lineHeight = 24.sp,
@@ -87,7 +81,7 @@ val Typography = Typography(
         color = Color(0xFF3c4043)
     ),
     bodyMedium = TextStyle(
-        fontFamily = Inter,
+        fontFamily = Montserrat,
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp,
         lineHeight = 20.sp,
@@ -95,7 +89,7 @@ val Typography = Typography(
         color = Color(0xFF3c4043)
     ),
     bodySmall = TextStyle(
-        fontFamily = Inter,
+        fontFamily = Montserrat,
         fontWeight = FontWeight.Normal,
         fontSize = 12.sp,
         lineHeight = 16.sp,
@@ -103,9 +97,9 @@ val Typography = Typography(
         color = Color(0xFF3c4043)
     ),
     
-    // Default fallback for others if needed, using Inter
+    // Labels -> Montserrat Medium
     labelLarge = TextStyle(
-        fontFamily = Inter,
+        fontFamily = Montserrat,
         fontWeight = FontWeight.Medium,
         fontSize = 14.sp,
         lineHeight = 20.sp,
@@ -113,7 +107,7 @@ val Typography = Typography(
         color = Color(0xFF3c4043)
     ),
     labelMedium = TextStyle(
-        fontFamily = Inter,
+        fontFamily = Montserrat,
         fontWeight = FontWeight.Medium,
         fontSize = 12.sp,
         lineHeight = 16.sp,
@@ -121,7 +115,7 @@ val Typography = Typography(
         color = Color(0xFF3c4043)
     ),
     labelSmall = TextStyle(
-        fontFamily = Inter,
+        fontFamily = Montserrat,
         fontWeight = FontWeight.Medium,
         fontSize = 11.sp,
         lineHeight = 16.sp,
