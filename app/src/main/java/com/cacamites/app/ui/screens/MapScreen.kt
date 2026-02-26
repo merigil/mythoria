@@ -1,30 +1,43 @@
 package com.cacamites.app.ui.screens
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import com.cacamites.app.model.GameStatus
+import androidx.core.content.ContextCompat
+import com.cacamites.app.R
 import com.cacamites.app.model.Point
+import com.cacamites.app.model.PointState
 import com.cacamites.app.repository.GameRepository
+import com.cacamites.app.ui.components.BottomMenuBar
 import com.cacamites.app.ui.components.addMarkersToMap
+import com.cacamites.app.ui.theme.Montserrat
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
@@ -35,160 +48,141 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 fun MapScreen(
     repository: GameRepository,
     onPointClick: (Point) -> Unit,
-    onOpenBook: () -> Unit
+    onOpenBook: () -> Unit,
+    onShowScoreboard: () -> Unit,
+    onNavigateToTrobador: () -> Unit
 ) {
     val context = LocalContext.current
     val mapView = remember { MapView(context) }
-    val points by repository.points.collectAsState()
+    val points by repository.points.collectAsState(initial = emptyList())
     val gameState by repository.gameState.collectAsState()
-    
+
+    val locationOverlay = remember { MyLocationNewOverlay(GpsMyLocationProvider(context), mapView) }
+
+    var locationPermissionGranted by remember {
+        mutableStateOf(
+            ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED
+        )
+    }
+
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        locationPermissionGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true
+                || permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+    }
+
     LaunchedEffect(Unit) {
+        if (!locationPermissionGranted) {
+            locationPermissionLauncher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
+        }
         mapView.setTileSource(TileSourceFactory.MAPNIK)
         mapView.setMultiTouchControls(true)
         mapView.controller.setZoom(18.0)
-        mapView.controller.setCenter(GeoPoint(41.930675, 2.254059)) // Inici Manlleu
-        
-        val locationProvider = GpsMyLocationProvider(context)
-        val locationOverlay = object : MyLocationNewOverlay(locationProvider, mapView) {
-            override fun onLocationChanged(location: android.location.Location?, source: org.osmdroid.views.overlay.mylocation.IMyLocationProvider?) {
-                super.onLocationChanged(location, source)
-                location?.let {
-                    val isMock = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                        it.isMock
-                    } else {
-                        @Suppress("DEPRECATION")
-                        it.isFromMockProvider
-                    }
-                    repository.updateUserLocation(it.latitude, it.longitude, isMock)
-                }
+
+        val isSerpent = points.any { it.id.startsWith("s_") && it.state != PointState.LOCKED }
+        val centerLocation = if (isSerpent) GeoPoint(41.930675, 2.254059) else GeoPoint(41.956361, 2.340167)
+        mapView.controller.setCenter(centerLocation)
+    }
+
+    LaunchedEffect(locationPermissionGranted) {
+        if (locationPermissionGranted) {
+            locationOverlay.enableMyLocation()
+            locationOverlay.enableFollowLocation()
+            if (!mapView.overlays.contains(locationOverlay)) {
+                mapView.overlays.add(locationOverlay)
             }
         }
-        locationOverlay.enableMyLocation()
-        locationOverlay.enableFollowLocation()
-        mapView.overlays.add(locationOverlay)
     }
 
     LaunchedEffect(points) {
         addMarkersToMap(mapView, points) { selectedPoint ->
-            onPointClick(selectedPoint)
+            val userLocation = locationOverlay.myLocation
+            if (userLocation != null) {
+                val distance = userLocation.distanceToAsDouble(selectedPoint.coordinate)
+                if (distance <= 20.0) {
+                    onPointClick(selectedPoint)
+                } else {
+                    Toast.makeText(context, "Estàs massa lluny per interactuar!", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                onPointClick(selectedPoint)
+            }
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize().background(color = Color.White)) {
-        AndroidView(factory = { mapView }, modifier = Modifier.fillMaxSize())
-
-        // BARRA SUPERIOR - PUNTUACIÓ I TEMPS
-        TopApBarWithStats(
-            score = gameState.totalScore,
-            timerSeconds = gameState.timerSecondsRemaining,
-            modifier = Modifier.align(Alignment.TopCenter)
-        )
-
-        // BARRA INFERIOR - INVENTARI
-        InventoryBottomBar(
-            inventory = gameState.inventory,
-            modifier = Modifier.align(Alignment.BottomCenter)
-        )
-        
-        // PANTALLES DE FINAL DE JOC
-        if (gameState.status == GameStatus.WON) {
-            GameResultOverlay(title = "VICTÒRIA!", subtitle = "Has superat el repte!", color = Color.Green)
-        } else if (gameState.status == GameStatus.LOST) {
-            GameResultOverlay(title = "GAME OVER", subtitle = "El temps s'ha acabat.", color = Color.Red)
-        }
-    }
-}
-
-@Composable
-fun TopApBarWithStats(
-    score: Int,
-    timerSeconds: Long?,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .fillMaxWidth()
-            .height(60.dp)
-            .background(color = Color.White.copy(alpha = 0.9f))
-            .padding(horizontal = 16.dp)
-            .shadow(elevation = 2.dp)
-    ) {
-        Column {
-            Text(
-                text = "Punts: $score",
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+    Scaffold(
+        bottomBar = {
+            BottomMenuBar(
+                activeItem = "backpack",
+                onFirstItemClick = { },
+                onTrobadorClick = onNavigateToTrobador,
+                onBookClick = onOpenBook,
+                firstItemIcon = Icons.Default.Person,
+                firstItemLabel = "Motxilla"
             )
         }
-        
-        timerSeconds?.let { seconds ->
-            val min = seconds / 60
-            val sec = seconds % 60
-            Text(
-                text = String.format("%02d:%02d", min, sec),
-                style = MaterialTheme.typography.headlineMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Red
-                )
+    ) { padding ->
+        Box(modifier = Modifier.fillMaxSize().padding(padding).background(color = Color.White)) {
+            AndroidView(factory = { mapView }, modifier = Modifier.fillMaxSize())
+
+            HeaderMap(
+                modifier = Modifier.align(Alignment.TopCenter).fillMaxWidth().padding(top = 10.dp, start = 16.dp, end = 16.dp),
+                onScoreboardClick = onShowScoreboard
             )
-        } ?: Text(
-            text = "CaçaMites",
-            style = MaterialTheme.typography.titleLarge.copy(
-                fontWeight = FontWeight.Bold,
-                color = Color(0xffec6209)
-            )
-        )
-    }
-}
 
-@Composable
-fun InventoryBottomBar(
-    inventory: Set<String>,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(70.dp)
-            .background(color = Color.White.copy(alpha = 0.95f))
-            .padding(8.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        InventorySlot(icon = Icons.Default.Person, label = "Personatge", isCollected = inventory.isNotEmpty())
-        InventorySlot(icon = Icons.Default.Star, label = "Objectes", isCollected = inventory.contains("espassa") || inventory.contains("rubi"))
-    }
-}
-
-@Composable
-fun InventorySlot(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String, isCollected: Boolean) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Icon(
-            imageVector = icon,
-            contentDescription = label,
-            tint = if (isCollected) Color(0xFFec6209) else Color.LightGray,
-            modifier = Modifier.size(32.dp)
-        )
-        Text(
-            text = label,
-            style = MaterialTheme.typography.labelSmall,
-            color = if (isCollected) Color.Black else Color.Gray
-        )
-    }
-}
-
-@Composable
-fun GameResultOverlay(title: String, subtitle: String, color: Color) {
-    Box(
-        modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.8f)),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = title, style = MaterialTheme.typography.displayMedium.copy(fontWeight = FontWeight.Bold, color = color))
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(text = subtitle, style = MaterialTheme.typography.bodyLarge.copy(color = Color.White))
+            Column(
+                modifier = Modifier.align(Alignment.TopCenter).padding(top = 85.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                if (gameState.status != com.cacamites.app.model.GameStatus.WAITING_TO_START) {
+                    Box(
+                        modifier = Modifier
+                            .background(Color.White, RoundedCornerShape(20.dp))
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                            .shadow(2.dp, RoundedCornerShape(20.dp))
+                    ) {
+                        val isSerpent = points.any { it.id.startsWith("s_") && it.state != PointState.LOCKED }
+                        val statusText = when (gameState.status) {
+                            com.cacamites.app.model.GameStatus.ACTIVE_PLAY -> if (isSerpent) "Busca les pistes de la Serpent" else "Explora el territori i completa la llegenda. Per aconseguir-ho, hauràs de:\nReunir 101 punts de força\nTrobar l’espasa\nParlar amb la Baronessa i el criat\nCercar el Baró i enfrontar-t’hi"
+                            com.cacamites.app.model.GameStatus.WON -> "HAS GUANYAT!"
+                            com.cacamites.app.model.GameStatus.LOST -> "Has perdut..."
+                            else -> ""
+                        }
+                        if (statusText.isNotEmpty()) {
+                            Text(
+                                text = statusText,
+                                style = TextStyle(
+                                    fontFamily = Montserrat,
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = Color.Gray,
+                                    lineHeight = 18.sp
+                                )
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }
 
+@Composable
+fun HeaderMap(modifier: Modifier = Modifier, onScoreboardClick: () -> Unit) {
+    Row(modifier = modifier.fillMaxWidth().height(60.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+        Box(modifier = Modifier.size(50.dp).shadow(4.dp, CircleShape).background(Color.White, CircleShape).padding(4.dp), contentAlignment = Alignment.Center) {
+            Image(painter = painterResource(id = R.drawable.logo_cacamites_petit), contentDescription = "Logo", modifier = Modifier.fillMaxSize().clip(CircleShape))
+        }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(modifier = Modifier.size(40.dp).shadow(2.dp, CircleShape).clip(CircleShape).background(Color.White).clickable { onScoreboardClick() }, contentAlignment = Alignment.Center) {
+                Icon(imageVector = Icons.Default.EmojiEvents, contentDescription = "Rànquing", tint = Color(0xFF0B94FE), modifier = Modifier.size(24.dp))
+            }
+            Spacer(modifier = Modifier.width(12.dp))
+            Box(modifier = Modifier.size(40.dp).shadow(2.dp, CircleShape).clip(CircleShape).background(Color(0xFF0B94FE)), contentAlignment = Alignment.Center) {
+                Icon(imageVector = Icons.Default.Person, contentDescription = "Perfil", tint = Color.White, modifier = Modifier.size(22.dp))
+            }
+        }
+    }
+}

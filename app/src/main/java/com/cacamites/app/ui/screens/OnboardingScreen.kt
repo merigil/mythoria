@@ -1,41 +1,44 @@
 package com.cacamites.app.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.Face
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cacamites.app.R
+import com.cacamites.app.ui.theme.Merienda
+import com.cacamites.app.ui.theme.Montserrat
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun OnboardingScreen(
     onFinishOnboarding: () -> Unit,
-    onSkip: () -> Unit
+    onSkip: () -> Unit,
+    onNavigateToTrobador: () -> Unit = {}
 ) {
     val pagerState = rememberPagerState(pageCount = { 3 })
     val scope = rememberCoroutineScope()
@@ -54,6 +57,7 @@ fun OnboardingScreen(
                 }
             },
             onSkip = onSkip,
+            onNavigateToTrobador = onNavigateToTrobador,
             isLastPage = page == 2
         )
     }
@@ -64,118 +68,256 @@ fun OnboardingPageContent(
     pageIndex: Int,
     onNext: () -> Unit,
     onSkip: () -> Unit,
+    onNavigateToTrobador: () -> Unit,
     isLastPage: Boolean
 ) {
+    val scrollState = rememberScrollState()
+    val primaryBlue = Color(0xff0b94fe)
+    val primaryOrange = Color(0xFFF17002)
+    val darkText = Color(0xFF202020) // El color dels títols
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(color = Color.White)
     ) {
-        // TOP ILLUSTRATION AREA
-        Box(
+        Column(
             modifier = Modifier
-                .align(Alignment.TopCenter)
-                .padding(top = 50.dp)
-                .size(360.dp, 300.dp)
-                .background(Color(0xFFE0F7FA), RoundedCornerShape(16.dp))
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+                .padding(bottom = 110.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = "Il·lustració Pàgina ${pageIndex + 1}",
-                modifier = Modifier.align(Alignment.Center),
-                color = Color(0xFF006064)
-            )
-        }
-
-        // PAGER INDICATORS
-        Row(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .offset(y = (-50).dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            repeat(3) { index ->
-                Box(
-                    modifier = Modifier
-                        .size(14.dp)
-                        .clip(CircleShape)
-                        .background(
-                            if (index == pageIndex) Color(0xff0b94fe) else Color(0xffdcdcdc)
-                        )
-                )
-            }
-        }
-
-        // TITLE
-        Text(
-            text = when(pageIndex) {
-                0 -> "Funcionament bàsic del joc"
-                1 -> "Explora el mapa"
-                else -> "Aconsegueix recompenses"
-            },
-            color = Color.Black,
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.titleLarge.copy(
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
-            ),
-            modifier = Modifier
-                .align(Alignment.Center)
-                .offset(y = 0.dp)
-                .padding(horizontal = 24.dp)
-        )
-
-        // DESCRIPTION
-        Text(
-            text = when(pageIndex) {
-                0 -> "Camina el territori, desperta llegendes i ajuda els protagonistes."
-                1 -> "Navega pel mapa per trobar les teves properes aventures."
-                else -> "Completa els reptes per guanyar punts i col·leccionables."
-            },
-            color = Color.Black,
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
-            modifier = Modifier
-                .align(Alignment.Center)
-                .offset(y = 60.dp)
-                .padding(horizontal = 32.dp)
-        )
-
-        // BUTTONS
-        Row(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 40.dp, start = 24.dp, end = 24.dp)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Surface(
+            Image(
+                painter = painterResource(
+                    id = when (pageIndex) {
+                        0 -> R.drawable.onboarding_01
+                        1 -> R.drawable.onboarding_02
+                        else -> R.drawable.onboarding_03
+                    }
+                ),
+                contentDescription = null,
                 modifier = Modifier
-                    .width(150.dp)
-                    .height(50.dp)
-                    .shadow(4.dp, RoundedCornerShape(8.dp))
-                    .clickable { onSkip() },
-                shape = RoundedCornerShape(8.dp),
-                color = Color.White
+                    .padding(top = 20.dp)
+                    .size(324.dp, 270.dp)
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Column(
+                modifier = Modifier.padding(horizontal = 24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Text(text = "SURT", color = Color(0xff0b94fe))
+                // TÍTOL (Merienda + darkText)
+                Text(
+                    text = stringResource(
+                        when (pageIndex) {
+                            0 -> R.string.onb_title_0
+                            1 -> R.string.onb_title_1
+                            else -> R.string.onb_title_2
+                        }
+                    ),
+                    color = darkText,
+                    textAlign = TextAlign.Center,
+                    style = TextStyle(
+                        fontFamily = Merienda,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Black,
+                        lineHeight = 26.sp
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                when (pageIndex) {
+                    0 -> {
+                        Surface(
+                            color = primaryBlue.copy(alpha = 0.05f),
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = stringResource(R.string.onb_p0_intro),
+                                color = darkText,
+                                modifier = Modifier.padding(16.dp),
+                                style = TextStyle(
+                                    fontFamily = Montserrat,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    lineHeight = 20.sp
+                                )
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        Text(
+                            text = buildAnnotatedString {
+                                withStyle(style = SpanStyle(fontFamily = Montserrat, fontWeight = FontWeight.Black, fontSize = 16.sp, color = darkText)) {
+                                    append(stringResource(R.string.onb_p0_steps_title) + "\n\n")
+                                }
+                                withStyle(style = SpanStyle(fontFamily = Montserrat, fontWeight = FontWeight.Black, fontSize = 14.sp, color = primaryBlue)) {
+                                    append(stringResource(R.string.onb_p0_step1_label))
+                                }
+                                withStyle(style = SpanStyle(fontFamily = Montserrat, fontWeight = FontWeight.Bold, fontSize = 13.sp, color = darkText)) {
+                                    append(stringResource(R.string.onb_p0_step1_body) + "\n\n")
+                                }
+                                withStyle(style = SpanStyle(fontFamily = Montserrat, fontWeight = FontWeight.Black, fontSize = 14.sp, color = primaryBlue)) {
+                                    append(stringResource(R.string.onb_p0_step2_label))
+                                }
+                                withStyle(style = SpanStyle(fontFamily = Montserrat, fontWeight = FontWeight.Bold, fontSize = 13.sp, color = darkText)) {
+                                    append(stringResource(R.string.onb_p0_step2_body))
+                                }
+                            },
+                            textAlign = TextAlign.Start,
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp)
+                        )
+                    }
+                    1 -> {
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            Text(
+                                text = stringResource(R.string.onb_p1_intro),
+                                style = TextStyle(fontFamily = Montserrat, fontSize = 14.sp, fontWeight = FontWeight.Bold, lineHeight = 22.sp),
+                                color = darkText
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            val bulletStyle = TextStyle(fontFamily = Montserrat, fontSize = 13.sp, fontWeight = FontWeight.Bold, lineHeight = 20.sp, color = darkText)
+                            Column(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                                Row(verticalAlignment = Alignment.Top) {
+                                    Text("• ", color = primaryBlue, fontWeight = FontWeight.Black, fontSize = 16.sp)
+                                    Text(stringResource(R.string.onb_p1_bullet1), style = bulletStyle)
+                                }
+                                Row(verticalAlignment = Alignment.Top) {
+                                    Text("• ", color = primaryBlue, fontWeight = FontWeight.Black, fontSize = 16.sp)
+                                    Text(stringResource(R.string.onb_p1_bullet2), style = bulletStyle)
+                                }
+                                Row(verticalAlignment = Alignment.Top) {
+                                    Text("• ", color = primaryBlue, fontWeight = FontWeight.Black, fontSize = 16.sp)
+                                    Text(stringResource(R.string.onb_p1_bullet3), style = bulletStyle)
+                                }
+                            }
+                        }
+                    }
+                    2 -> {
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            Text(
+                                text = stringResource(R.string.onb_p2_intro),
+                                style = TextStyle(fontFamily = Montserrat, fontSize = 14.sp, fontWeight = FontWeight.Bold, lineHeight = 22.sp),
+                                color = darkText
+                            )
+                            Spacer(modifier = Modifier.height(20.dp))
+                            Text(
+                                text = stringResource(R.string.onb_p2_points_title),
+                                style = TextStyle(fontFamily = Merienda, fontSize = 16.sp, fontWeight = FontWeight.Black),
+                                color = primaryBlue
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            val pointBodyStyle = TextStyle(fontFamily = Montserrat, fontSize = 13.sp, fontWeight = FontWeight.Bold, lineHeight = 20.sp, color = darkText)
+                            Column(verticalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth()) {
+                                Row(verticalAlignment = Alignment.Top) {
+                                    Text(stringResource(R.string.onb_p2_point1_label), color = primaryOrange, fontWeight = FontWeight.Black, fontSize = 15.sp)
+                                    Text(stringResource(R.string.onb_p2_point1_body), style = pointBodyStyle)
+                                }
+                                Row(verticalAlignment = Alignment.Top) {
+                                    Text(stringResource(R.string.onb_p2_point2_label), color = primaryOrange, fontWeight = FontWeight.Black, fontSize = 15.sp)
+                                    Text(stringResource(R.string.onb_p2_point2_body), style = pointBodyStyle)
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(20.dp))
+                            // Maneres de jugar
+                            Text(
+                                text = stringResource(R.string.onb_p2_ways_title),
+                                style = TextStyle(fontFamily = Merienda, fontSize = 16.sp, fontWeight = FontWeight.Black),
+                                color = primaryBlue
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            val wayStyle = TextStyle(fontFamily = Montserrat, fontSize = 13.sp, fontWeight = FontWeight.Bold, lineHeight = 20.sp, color = darkText)
+                            Column(verticalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth()) {
+                                Row(verticalAlignment = Alignment.Top) {
+                                    Text("• ", color = primaryBlue, fontWeight = FontWeight.Black, fontSize = 15.sp)
+                                    Text(stringResource(R.string.onb_p2_way1), style = wayStyle)
+                                }
+                                Row(verticalAlignment = Alignment.Top) {
+                                    Text("• ", color = primaryBlue, fontWeight = FontWeight.Black, fontSize = 15.sp)
+                                    Text(stringResource(R.string.onb_p2_way2), style = wayStyle)
+                                }
+                                Row(verticalAlignment = Alignment.Top) {
+                                    Text("• ", color = primaryBlue, fontWeight = FontWeight.Black, fontSize = 15.sp)
+                                    Text(stringResource(R.string.onb_p2_way3), style = wayStyle)
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(20.dp))
+                            // Rutes accessibles
+                            Surface(
+                                color = Color(0xFFE8F5E9),
+                                shape = RoundedCornerShape(10.dp),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Column(modifier = Modifier.padding(12.dp)) {
+                                    Text(
+                                        text = stringResource(R.string.onb_p2_access_title),
+                                        style = TextStyle(fontFamily = Merienda, fontSize = 15.sp, fontWeight = FontWeight.Black),
+                                        color = Color(0xFF2E7D32)
+                                    )
+                                    Spacer(modifier = Modifier.height(6.dp))
+                                    val accessStyle = TextStyle(fontFamily = Montserrat, fontSize = 13.sp, fontWeight = FontWeight.Bold, lineHeight = 20.sp, color = darkText)
+                                    Text(stringResource(R.string.onb_p2_access1), style = accessStyle)
+                                    Text(stringResource(R.string.onb_p2_access2), style = accessStyle)
+                                }
+                            }
+                        }
+                    }
                 }
             }
-            
-            Surface(
-                modifier = Modifier
-                    .width(150.dp)
-                    .height(50.dp)
-                    .shadow(4.dp, RoundedCornerShape(8.dp))
-                    .clickable { onNext() },
-                shape = RoundedCornerShape(8.dp),
-                color = Color(0xff0b94fe)
+        }
+
+        // BOTONS
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .background(Color.White)
+                .padding(bottom = 30.dp, start = 24.dp, end = 24.dp, top = 10.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Text(text = if (isLastPage) "COMENÇAR" else "SEGUENT", color = Color.White)
+                Surface(
+                    modifier = Modifier
+                        .width(150.dp)
+                        .height(50.dp)
+                        .clickable { onSkip() },
+                    shape = RoundedCornerShape(8.dp),
+                    color = Color.White,
+                    border = BorderStroke(2.dp, primaryBlue)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Text(
+                            text = stringResource(R.string.onb_btn_skip),
+                            color = primaryBlue,
+                            style = TextStyle(fontFamily = Montserrat, fontSize = 16.sp, fontWeight = FontWeight.Black)
+                        )
+                    }
+                }
+
+                Surface(
+                    modifier = Modifier
+                        .width(150.dp)
+                        .height(50.dp)
+                        .clickable { onNext() },
+                    shape = RoundedCornerShape(8.dp),
+                    color = primaryBlue
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Text(
+                            text = stringResource(if (isLastPage) R.string.onb_btn_start else R.string.onb_btn_next),
+                            color = Color.White,
+                            style = TextStyle(fontFamily = Montserrat, fontSize = 16.sp, fontWeight = FontWeight.Black)
+                        )
+                    }
                 }
             }
         }
     }
 }
-

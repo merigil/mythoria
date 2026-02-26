@@ -1,7 +1,11 @@
 package com.cacamites.app.ui.screens
 
+import android.widget.Toast
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -11,6 +15,7 @@ import com.cacamites.app.repository.GameRepository
 fun MainScreen() {
     val navController = rememberNavController()
     val repository = remember { GameRepository() }
+    val context = LocalContext.current
 
     NavHost(navController = navController, startDestination = "landing") {
         composable("landing") {
@@ -50,9 +55,12 @@ fun MainScreen() {
         
         composable("dashboard") {
             DashboardScreen(
-                onAdventureSelected = { type ->
+                onNavigateToMap = { type ->
                     repository.startNewLegend(type)
                     navController.navigate("map")
+                },
+                onNavigateToTrobador = {
+                    navController.navigate("trobador/intro")
                 }
             )
         }
@@ -66,16 +74,30 @@ fun MainScreen() {
                     navController.navigate("legend_detail/$cardId")
                 },
                 onOpenBook = {
-                     navController.navigate("dashboard") {
-                         popUpTo("map") { inclusive = true }
-                     }
+                     navController.navigate("dashboard")
+                },
+                onShowScoreboard = {
+                    Toast.makeText(context, "Rànquing en temps real (Redis) properament", Toast.LENGTH_SHORT).show()
+                },
+                onNavigateToTrobador = {
+                    navController.navigate("trobador/full")
                 }
             )
         }
         
+        composable("trobador/{mode}") { backStackEntry ->
+            val mode = backStackEntry.arguments?.getString("mode") ?: "full"
+            val gameState by repository.gameState.collectAsState()
+            TrobadorScreen(
+                mode = mode,
+                gameState = gameState,
+                onClose = { navController.popBackStack() }
+            )
+        }
+
         composable("legend_detail/{cardId}") { backStackEntry ->
-            val cardId = backStackEntry.arguments?.getString("cardId")
-            val card = repository.getCard(cardId ?: "")
+            val cardId = backStackEntry.arguments?.getString("cardId") ?: ""
+            val card = repository.getCard(cardId)
             
             LegendDetailScreen(
                 card = card,
@@ -85,4 +107,3 @@ fun MainScreen() {
         }
     }
 }
-

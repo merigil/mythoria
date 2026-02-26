@@ -9,117 +9,63 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.cacamites.app.R
 
-// Local Fonts
+// Local Fonts (Sabem que Merienda i Montserrat funcionen perquè estan a res/font)
 val Merienda = FontFamily(
     Font(R.font.merienda)
 )
 
 val Montserrat = FontFamily(
-    Font(R.font.montserrat)
+    Font(R.font.montserrat, FontWeight.Normal),
+    Font(R.font.montserrat, FontWeight.Bold),
+    Font(R.font.montserrat, FontWeight.Black)
 )
 
 val Typography = Typography(
     // Headlines -> Merienda
     headlineLarge = TextStyle(
         fontFamily = Merienda,
-        fontWeight = FontWeight.Normal,
+        fontWeight = FontWeight.Black,
         fontSize = 32.sp,
         lineHeight = 40.sp,
-        letterSpacing = 0.sp,
-        color = Color(0xFF3c4043)
+        color = DarkCharcoal
     ),
     headlineMedium = TextStyle(
         fontFamily = Merienda,
-        fontWeight = FontWeight.Normal,
+        fontWeight = FontWeight.Black,
         fontSize = 28.sp,
         lineHeight = 36.sp,
-        letterSpacing = 0.sp,
-        color = Color(0xFF3c4043)
-    ),
-    headlineSmall = TextStyle(
-        fontFamily = Merienda,
-        fontWeight = FontWeight.Normal,
-        fontSize = 24.sp,
-        lineHeight = 32.sp,
-        letterSpacing = 0.sp,
-        color = Color(0xFF3c4043)
+        color = DarkCharcoal
     ),
 
-    // Titles -> Montserrat Bold
+    // Titles -> Montserrat Bold (Estil Premium) - Negre Carbó accessible
     titleLarge = TextStyle(
         fontFamily = Montserrat,
         fontWeight = FontWeight.Bold,
         fontSize = 22.sp,
         lineHeight = 28.sp,
-        letterSpacing = 0.sp,
-        color = Color(0xFF3c4043)
+        color = DarkCharcoal
     ),
     titleMedium = TextStyle(
         fontFamily = Montserrat,
         fontWeight = FontWeight.Bold,
         fontSize = 16.sp,
         lineHeight = 24.sp,
-        letterSpacing = 0.15.sp,
-        color = Color(0xFF3c4043)
-    ),
-    titleSmall = TextStyle(
-        fontFamily = Montserrat,
-        fontWeight = FontWeight.Bold,
-        fontSize = 14.sp,
-        lineHeight = 20.sp,
-        letterSpacing = 0.1.sp,
-        color = Color(0xFF3c4043)
+        color = DarkCharcoal
     ),
 
-    // Body -> Montserrat Regular
+    // Body -> Montserrat Regular - Gris fosc accessible per a descripcions
     bodyLarge = TextStyle(
         fontFamily = Montserrat,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         lineHeight = 24.sp,
-        letterSpacing = 0.5.sp,
-        color = Color(0xFF3c4043)
+        color = GrayText
     ),
     bodyMedium = TextStyle(
         fontFamily = Montserrat,
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp,
         lineHeight = 20.sp,
-        letterSpacing = 0.25.sp,
-        color = Color(0xFF3c4043)
-    ),
-    bodySmall = TextStyle(
-        fontFamily = Montserrat,
-        fontWeight = FontWeight.Normal,
-        fontSize = 12.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.4.sp,
-        color = Color(0xFF3c4043)
-    ),
-    
-    // Labels -> Montserrat Medium
-    labelLarge = TextStyle(
-        fontFamily = Montserrat,
-        fontWeight = FontWeight.Medium,
-        fontSize = 14.sp,
-        lineHeight = 20.sp,
-        letterSpacing = 0.1.sp,
-        color = Color(0xFF3c4043)
-    ),
-    labelMedium = TextStyle(
-        fontFamily = Montserrat,
-        fontWeight = FontWeight.Medium,
-        fontSize = 12.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp,
-        color = Color(0xFF3c4043)
-    ),
-    labelSmall = TextStyle(
-        fontFamily = Montserrat,
-        fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp,
-        color = Color(0xFF3c4043)
+        color = GrayText
     )
 )

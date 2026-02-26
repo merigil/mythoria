@@ -2,17 +2,7 @@ package com.cacamites.app.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -20,28 +10,21 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.cacamites.app.model.Card
 import com.cacamites.app.repository.GameRepository
-import com.cacamites.app.ui.theme.ForestGreen
-import com.cacamites.app.ui.theme.GoldAccent
+import com.cacamites.app.ui.theme.Merienda
+import com.cacamites.app.ui.theme.Montserrat
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,20 +34,31 @@ fun LegendBookScreen(
     onCardClick: (String) -> Unit
 ) {
     val cards by repository.cards.collectAsState()
+    val primaryBlue = Color(0xff0b94fe)
+    val textBlack = Color(0xFF202020) // Negre carbó intens
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Llibre de Llegendes") },
+            CenterAlignedTopAppBar(
+                title = { 
+                    Text(
+                        "El meu llibre de llegendes", 
+                        style = TextStyle(
+                            fontFamily = Merienda, 
+                            fontSize = 22.sp, 
+                            fontWeight = FontWeight.Black,
+                            color = textBlack // Forcem el color negre intens
+                        )
+                    ) 
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, "Tornar")
+                        Icon(Icons.Default.ArrowBack, "Tornar", tint = primaryBlue)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = ForestGreen,
-                    titleContentColor = Color.White,
-                    navigationIconContentColor = Color.White
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = Color.White,
+                    titleContentColor = textBlack // Assegurem que la barra també ho sàpiga
                 )
             )
         }
@@ -73,23 +67,26 @@ fun LegendBookScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .background(MaterialTheme.colorScheme.background)
+                .background(Color(0xFFF8F9FA))
         ) {
             // Summary Header
             val unlockedCount = cards.count { it.isUnlocked }
-            val totalCount = cards.size.coerceAtLeast(1) // Avoid div by zero in future
+            val totalCount = cards.size.coerceAtLeast(1)
             
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .background(ForestGreen.copy(alpha = 0.1f), RoundedCornerShape(8.dp))
-                    .padding(16.dp)
+            Surface(
+                modifier = Modifier.fillMaxWidth().padding(16.dp),
+                color = primaryBlue.copy(alpha = 0.05f),
+                shape = RoundedCornerShape(12.dp)
             ) {
                 Text(
                     text = "Llegendes Descobertes: $unlockedCount / $totalCount",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = ForestGreen
+                    style = TextStyle(
+                        fontFamily = Montserrat, 
+                        fontWeight = FontWeight.Black, 
+                        fontSize = 14.sp
+                    ),
+                    color = primaryBlue,
+                    modifier = Modifier.padding(16.dp)
                 )
             }
 
@@ -117,56 +114,62 @@ fun LegendCardItem(
     card: Card,
     onClick: () -> Unit
 ) {
+    val primaryBlue = Color(0xff0b94fe)
+    val textBlack = Color(0xFF202020)
+    
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .aspectRatio(0.75f) // Book Aspect Ratio
+            .aspectRatio(0.8f)
             .clickable(enabled = card.isUnlocked) { onClick() },
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (card.isUnlocked) Color.White else Color.LightGray
+            containerColor = if (card.isUnlocked) Color.White else Color(0xFFE0E0E0)
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = if (card.isUnlocked) 6.dp else 0.dp)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             if (card.isUnlocked) {
-                Column(
-                    modifier = Modifier.padding(12.dp)
-                ) {
+                Column(modifier = Modifier.padding(12.dp)) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f)
-                            .background(ForestGreen.copy(alpha = 0.2f), RoundedCornerShape(4.dp)),
+                            .background(primaryBlue.copy(alpha = 0.1f), RoundedCornerShape(8.dp)),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = card.title.take(1).uppercase(),
-                            style = MaterialTheme.typography.displayMedium,
-                            color = ForestGreen
+                            style = TextStyle(
+                                fontFamily = Merienda, 
+                                fontSize = 40.sp, 
+                                color = primaryBlue,
+                                fontWeight = FontWeight.Black
+                            )
                         )
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = card.title,
-                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                        style = TextStyle(
+                            fontFamily = Montserrat, 
+                            fontWeight = FontWeight.Black, 
+                            fontSize = 13.sp,
+                            color = textBlack
+                        ),
                         maxLines = 2
                     )
                 }
             } else {
-                // Locked State
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Icon(
                         imageVector = Icons.Default.Lock,
                         contentDescription = "Bloquejat",
                         tint = Color.Gray,
-                        modifier = Modifier.fillMaxSize(0.4f)
+                        modifier = Modifier.size(32.dp)
                     )
                 }
             }
         }
     }
 }
-

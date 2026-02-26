@@ -1,69 +1,125 @@
 package com.cacamites.app.ui.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Place
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Icon
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
+import androidx.core.content.ContextCompat
+import com.cacamites.app.R
 import com.cacamites.app.model.Point
 import com.cacamites.app.model.PointState
 import com.cacamites.app.model.PointType
-import com.cacamites.app.ui.theme.GoldAccent
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
-
-// Note: Since OSMDroid is View-based, we ideally use its native Marker overlay.
-// However, for this MVP we can manipulate the Marker object from a Composable side-effect 
-// or simpler: just create a function to add markers to the MapView.
-
-// To keep it "Compose-ish", we'll create a helper that syncs the list of points to the MapView.
+import org.osmdroid.views.overlay.Polygon
 
 fun addMarkersToMap(
     mapView: MapView,
     points: List<Point>,
     onPointClick: (Point) -> Unit
 ) {
-    // Clear existing markers to avoid duplicates (naive approach for MVP)
-    // In production, we'd diff the list.
-    mapView.overlays.removeAll { it is Marker && it.id != "user_location" }
+    val context = mapView.context
+    // Clear existing overlays but keep User Location
+    mapView.overlays.removeAll { it !is org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay }
 
     points.forEach { point ->
-        val marker = Marker(mapView)
-        marker.position = point.coordinate
-        marker.title = point.title
-        marker.id = point.id
+        // Si el punt és invisible per disseny, no el dibuixem mai al mapa
+        if (point.isAlwaysInvisible) return@forEach
         
-        // Custom Icon logic based on state
-        val iconDrawable = when (point.state) {
-            PointState.LOCKED -> android.R.drawable.ic_lock_lock // Placeholder system icons
-            PointState.VISIBLE -> android.R.drawable.star_on
-            PointState.COMPLETED -> android.R.drawable.checkbox_on_background
+        if (point.state != PointState.LOCKED) {
+            val isStart = point.id.endsWith("_start")
+            
+            // 1. Draw Interaction Circle
+            val circle = Polygon().apply {
+                pointsAsCircle(point.coordinate, point.interactionRadius)
+                
+                val baseColor = if (isStart) {
+                    android.graphics.Color.parseColor("#F17002") // Taronja per a l'inici
+                } else {
+                    android.graphics.Color.GREEN
+                }
+                
+                fillColor = android.graphics.Color.argb(40, android.graphics.Color.red(baseColor), android.graphics.Color.green(baseColor), android.graphics.Color.blue(baseColor))
+                strokeColor = baseColor
+                strokeWidth = 2.0f
+            }
+            mapView.overlays.add(circle)
+
+            // 2. Draw Marker
+            val marker = Marker(mapView)
+            marker.position = point.coordinate
+            marker.title = point.title
+            marker.id = point.id
+            
+            // Icona segons estat
+            if (point.state == PointState.COMPLETED) {
+                marker.icon = ContextCompat.getDrawable(context, android.R.drawable.checkbox_on_background)
+            } else {
+                if (isStart) {
+                    marker.icon = createFlagMarker(context, "#F17002")
+                } else {
+                    val drawable = ContextCompat.getDrawable(context, org.osmdroid.library.R.drawable.marker_default)
+                    drawable?.setTint(android.graphics.Color.RED)
+                    marker.icon = drawable
+                }
+            }
+            
+            marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+            
+            marker.setOnMarkerClickListener { _, _ ->
+                onPointClick(point)
+                true
+            }
+            
+            mapView.overlays.add(marker)
         }
-        
-        // We can't easily set a Compose Drawable here without converting.
-        // For MVP, we'll rely on default markers or set simplified colors if possible.
-        // marker.icon = ...
-        
-        marker.setOnMarkerClickListener { _, _ ->
-            onPointClick(point)
-            true
-        }
-        
-        mapView.overlays.add(marker)
     }
     
     mapView.invalidate()
 }
 
+private fun Polygon.pointsAsCircle(center: org.osmdroid.util.GeoPoint, radiusInMeters: Double) {
+    val points = mutableListOf<org.osmdroid.util.GeoPoint>()
+    for (i in 0 until 360 step 10) {
+        points.add(center.destinationPoint(radiusInMeters, i.toDouble()))
+    }
+    this.points = points
+}
+
+private fun createFlagMarker(context: Context, hexColor: String): Drawable {
+    val width = 120
+    val height = 160 
+    val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(bitmap)
+    val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+
+    paint.color = android.graphics.Color.parseColor(hexColor)
+    
+    val centerX = width / 2f
+    val radius = width / 2f
+    canvas.drawCircle(centerX, radius, radius, paint)
+    
+    val path = android.graphics.Path()
+    path.moveTo(centerX - radius * 0.85f, radius * 0.85f) 
+    path.lineTo(centerX, height.toFloat()) 
+    path.lineTo(centerX + radius * 0.85f, radius * 0.85f)
+    path.close()
+    canvas.drawPath(path, paint)
+
+    paint.color = android.graphics.Color.WHITE
+    val iconSize = width * 0.5f
+    val left = centerX - iconSize / 2f
+    val top = radius - iconSize / 2f
+    
+    canvas.drawRect(left + 5f, top, left + 12f, top + iconSize, paint)
+    val flagPath = android.graphics.Path()
+    flagPath.moveTo(left + 12f, top)
+    flagPath.lineTo(left + iconSize, top + iconSize / 4f)
+    flagPath.lineTo(left + 12f, top + iconSize / 2f)
+    flagPath.close()
+    canvas.drawPath(flagPath, paint)
+
+    return BitmapDrawable(context.resources, bitmap)
+}

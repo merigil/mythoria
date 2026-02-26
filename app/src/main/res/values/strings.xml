@@ -1,5 +1,50 @@
 <resources>
     <string name="app_name">CaçaMites</string>
     <string name="permission_required">Aquesta aplicació necessita accés a la ubicació per guiar-te en la llegenda.</string>
-    <string name="grant_permission">Donar Perimés</string>
+    <string name="grant_permission">Donar Permís</string>
+
+    <!-- ── ONBOARDING ──────────────────────────────────────────────── -->
+
+    <!-- Títols -->
+    <string name="onb_title_0">Sigues benvinguda o benvingut,\ncaçadora o caçador!</string>
+    <string name="onb_title_1">Juga al món real, amb seguretat</string>
+    <string name="onb_title_2">Categories i punts</string>
+
+    <!-- Página 0 -->
+    <string name="onb_p0_intro">Camina pel territori, desperta llegendes i ajuda els seus protagonistes: cada pas obre nous punts d\'interès, reptes i històries vives del lloc que explores.</string>
+    <string name="onb_p0_steps_title">Passos del joc</string>
+    <string name="onb_p0_step1_label">Desperta la llegenda: </string>
+    <string name="onb_p0_step1_body">Arriba al punt sagrat i inicia l\'aventura.\n\n</string>
+    <string name="onb_p0_step2_label">Escolta i fes-la teva: </string>
+    <string name="onb_p0_step2_body">Deixa\'t portar per la veu de La Trobadora.</string>
+
+    <!-- Pàgina 1 -->
+    <string name="onb_p1_intro">L\'app utilitza la teva ubicació real per desbloquejar continguts només quan arribes als llocs indicats. No tot és visible des del principi: explorar forma part del misteri i del joc. La geolocalització és clau per a l\'experiència, activa-la!</string>
+    <string name="onb_p1_bullet1">No compartim la teva ubicació amb altres usuaris.</string>
+    <string name="onb_p1_bullet2">Pots rebre avisos de seguretat i recomanacions durant la ruta.</string>
+    <string name="onb_p1_bullet3">Respecta la natura, la pagesia i l\'entorn per on passes.</string>
+    <string name="onb_p1_alert">Alerta important: Totes les rutes es basen en localitzacions reals. Cal preparar-se com quan vas d\'excursió: roba adequada, aigua, bateria suficient i atenció a l\'entorn.</string>
+
+    <!-- Pàgina 2 -->
+    <string name="onb_p2_intro">Catalunya és el tauler i cada lloc amaga una llegenda per descobrir.</string>
+    <string name="onb_p2_points_title">Punts del mapa</string>
+    <string name="onb_p2_point1_label">+1 punt: </string>
+    <string name="onb_p2_point1_body">zona urbana o accés fàcil</string>
+    <string name="onb_p2_point2_label">+2 punts: </string>
+    <string name="onb_p2_point2_body">muntanya, ruta llarga o poc senyalitzada</string>
+    <string name="onb_p2_ways_title">Maneres de jugar</string>
+    <string name="onb_p2_way1">Sol: al teu ritme</string>
+    <string name="onb_p2_way2">En grup: compartint punts</string>
+    <string name="onb_p2_way3">Amb infants (fins a 12 anys)</string>
+    <string name="onb_p2_access_title">Rutes accessibles</string>
+    <string name="onb_p2_access1">Mateixos punts que la resta</string>
+    <string name="onb_p2_access2">Formen part d\'un rànquing inclusiu propi</string>
+
+    <!-- Botons -->
+    <string name="onb_btn_skip">SURT</string>
+    <string name="onb_btn_next">SEGÜENT</string>
+    <string name="onb_btn_start">COMENÇA</string>
+
+    <!-- ── LLEGENDA DEL BARÓ ──────────────────────────────────────────────── -->
+    <string name="baro_poem">Conta la llegenda que\u2026.\n\nAls boscos de Savassona antic,\nregnava un baró d\'acer i crit.\nOrgullós, temut per la seva llei,\nmés fred que l\'hivern, més dur que rei.\n\nBella dama, d\'esperit clar,\nsomiava lliure entre murs d\'acer.\nPartí a Croada amb ferro i honor;\nal castell, germinà secret amor.</string>
 </resources>
