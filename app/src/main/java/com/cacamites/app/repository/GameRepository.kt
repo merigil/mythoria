@@ -102,7 +102,7 @@ class GameRepository {
             Point("p_font_baronessa", "La font de la Baronessa", GeoPoint(41.953800, 2.336105), PointType.NARRATIVE, PointState.LOCKED, score = 0),
             
             // MANLLEU
-            Point("s_start", "Punt d'Inici", GeoPoint(41.930675, 2.254059), PointType.NARRATIVE, PointState.LOCKED, score = 0),
+            Point("s_start", "Punt d'Inici", GeoPoint(41.932250, 2.252556), PointType.NARRATIVE, PointState.LOCKED, score = 0),
             Point("s_pregoner", "El Pregoner", GeoPoint(41.930508, 2.253943), PointType.NARRATIVE, PointState.LOCKED, score = 0),
             Point("s_barquer", "La barquera", GeoPoint(41.930191, 2.253875), PointType.NARRATIVE, PointState.LOCKED, score = 0),
             Point("s_vaquer", "El vaquer", GeoPoint(41.930153, 2.254478), PointType.NARRATIVE, PointState.LOCKED, score = 0),
