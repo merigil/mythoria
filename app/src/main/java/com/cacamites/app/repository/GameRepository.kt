@@ -74,7 +74,7 @@ class GameRepository {
     private fun createPoints(): List<Point> {
         return listOf(
             // SAVASSONA
-            Point("p_start", "Punt d'Inici", GeoPoint(41.931992, 2.252433), PointType.NARRATIVE, PointState.VISIBLE, score = 0),
+            Point("p_start", "Punt d'Inici", GeoPoint(41.932224, 2.252608), PointType.NARRATIVE, PointState.VISIBLE, score = 0),
             Point("p_llops1", "Llops Punt 01", GeoPoint(41.931965, 2.251870), PointType.NARRATIVE, score = 0, isTrap = true),
             Point("p_llops2", "Llops Punt 02", GeoPoint(41.931997, 2.252057), PointType.NARRATIVE, score = 0, isTrap = true),
             Point("p_llops3", "Llops Punt 03", GeoPoint(41.932001, 2.252188), PointType.NARRATIVE, score = 0, isTrap = true),

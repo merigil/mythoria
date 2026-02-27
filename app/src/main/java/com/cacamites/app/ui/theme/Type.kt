@@ -21,7 +21,7 @@ val Montserrat = FontFamily(
 )
 
 val Typography = Typography(
-    // Headlines -> Merienda
+    // Headlines -> Merienda (Títols principals)
     headlineLarge = TextStyle(
         fontFamily = Merienda,
         fontWeight = FontWeight.Black,
@@ -37,7 +37,7 @@ val Typography = Typography(
         color = DarkCharcoal
     ),
 
-    // Titles -> Montserrat Bold (Estil Premium) - Negre Carbó accessible
+    // Titles -> Montserrat Bold (Subtítols)
     titleLarge = TextStyle(
         fontFamily = Montserrat,
         fontWeight = FontWeight.Bold,
@@ -53,19 +53,49 @@ val Typography = Typography(
         color = DarkCharcoal
     ),
 
-    // Body -> Montserrat Regular - Gris fosc accessible per a descripcions
+    // Body -> Montserrat Bold (Textos que no són títols ara són BOLD per petició)
     bodyLarge = TextStyle(
         fontFamily = Montserrat,
-        fontWeight = FontWeight.Normal,
+        fontWeight = FontWeight.Bold,
         fontSize = 16.sp,
         lineHeight = 24.sp,
         color = GrayText
     ),
     bodyMedium = TextStyle(
         fontFamily = Montserrat,
-        fontWeight = FontWeight.Normal,
+        fontWeight = FontWeight.Bold,
         fontSize = 14.sp,
         lineHeight = 20.sp,
+        color = GrayText
+    ),
+    bodySmall = TextStyle(
+        fontFamily = Montserrat,
+        fontWeight = FontWeight.Bold,
+        fontSize = 12.sp,
+        lineHeight = 16.sp,
+        color = GrayText
+    ),
+
+    // Labels -> Montserrat Bold
+    labelLarge = TextStyle(
+        fontFamily = Montserrat,
+        fontWeight = FontWeight.Bold,
+        fontSize = 14.sp,
+        lineHeight = 20.sp,
+        color = GrayText
+    ),
+    labelMedium = TextStyle(
+        fontFamily = Montserrat,
+        fontWeight = FontWeight.Bold,
+        fontSize = 12.sp,
+        lineHeight = 16.sp,
+        color = GrayText
+    ),
+    labelSmall = TextStyle(
+        fontFamily = Montserrat,
+        fontWeight = FontWeight.Bold,
+        fontSize = 11.sp,
+        lineHeight = 16.sp,
         color = GrayText
     )
 )

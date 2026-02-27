@@ -39,7 +39,7 @@ fun TrobadorScreen(
 ) {
     val scrollState = rememberScrollState()
     val isSerpent = gameState.legendId == "SERPENT"
-    val context = androidx.compose.ui.platform.LocalContext.current
+    val context = LocalContext.current
 
     val titleText = when {
         mode == "intro" -> "Salutacions, viatger!"
@@ -172,22 +172,24 @@ fun TrobadorScreen(
                 var textToDisplay by remember { mutableStateOf("") }
                 val isWon = gameState.status == GameStatus.WON
                 
-                val fullText = buildString {
-                    if (isSerpent) {
-                        if (isWon) {
-                            append("Conta la llegenda que… La Serpent no havia estat sempre un monstre, sinó una dona que fou transformada en serp gegantina. Un jove del poble, decidit a alliberar la vila, ideà un pla enginyós utilitzant un morter. La bèstia es va colpejar contra ell fins a morir. La pedra fou recuperada, i el poble quedà lliure del terror.")
+                val fullText = remember(isSerpent, isWon, gameState.visitedPoints) {
+                    buildString {
+                        if (isSerpent) {
+                            if (isWon) {
+                                append("Conta la llegenda que… La Serpent no havia estat sempre un monstre, sinó una dona que fou transformada en serp gegantina. Un jove del poble, decidit a alliberar la vila, ideà un pla enginyós utilitzant un morter. La bèstia es va colpejar contra ell fins a morir. La pedra fou recuperada, i el poble quedà lliure del terror.")
+                            } else {
+                                append("Segueix les pistes: alguns punts i personatges clau són visibles i altres invisibles, però si segueixes el que et van dient, segur que te'n surts i la llegenda serà teva.")
+                            }
                         } else {
-                            append("Segueix les pistes: alguns punts i personatges clau són visibles i altres invisibles, però si segueixes el que et van dient, segur que te'n surts i la llegenda serà teva.")
-                        }
-                    } else {
-                        append("Conta la llegenda que….\nAls boscos de Savassona antic,\n regnava un baró d’acer i crit.\n Orgullós, temut per la seva llei,\n més fred que l’hivern, més dur que rei.\nBella dama, d’esperit clar,\n somiava lliure entre murs d’acer.\nPartí a Croada amb ferro i honor;\n al castell, germinà secret amor.")
-                        
-                        if (gameState.visitedPoints.contains("p_jove")) {
-                            append("\n\nEls dos enamorats es trobaven a la balma on brollava la font. Desconfiat, quan el baró tornà de les creuades descobrí allò que la gelosia ja li havia fet témer.")
-                        }
-                        
-                        if (isWon) {
-                            append("\n\nCegat per la gelosia, el Baró els va atacar amb la seva espasa. A la balma, va matar la Baronessa i el seu criat, segellant així el seu terrible destí. Diu la tradició que, les nits de lluna plena, es pot veure la imatge de la Baronessa a la lluna.")
+                            append("Conta la llegenda que….\nAls boscos de Savassona antic,\n regnava un baró d’acer i crit.\n Orgullós, temut per la seva llei,\n més fred que l’hivern, més dur que rei.\nBella dama, d’esperit clar,\n somiava lliure entre murs d’acer.\nPartí a Croada amb ferro i honor;\n al castell, germinà secret amor.")
+                            
+                            if (gameState.visitedPoints.contains("p_jove")) {
+                                append("\n\nEls dos enamorats es trobaven a la balma on brollava la font. Desconfiat, quand el baró tornà de les creuades descobrí allò que la gelosia ja li havia fet témer.")
+                            }
+                            
+                            if (isWon) {
+                                append("\n\nCegat per la gelosia, el Baró els va atacar amb la seva espasa. A la balma, va matar la Baronessa i el seu criat, segellant així el seu terrible destí. Diu la tradició que, les nits de lluna plena, es pot veure la imatge de la Baronessa a la lluna.")
+                            }
                         }
                     }
                 }
@@ -224,8 +226,9 @@ fun TrobadorScreen(
                     letterSpacing = 2.sp
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
+                // Repte (No Merienda)
                 Surface(
                     color = Color(0xFFF17002).copy(alpha = 0.15f),
                     shape = RoundedCornerShape(12.dp),

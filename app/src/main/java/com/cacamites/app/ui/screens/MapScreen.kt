@@ -82,7 +82,7 @@ fun MapScreen(
         mapView.controller.setZoom(18.0)
 
         val isSerpent = points.any { it.id.startsWith("s_") && it.state != PointState.LOCKED }
-        val centerLocation = if (isSerpent) GeoPoint(41.930675, 2.254059) else GeoPoint(41.956361, 2.340167)
+        val centerLocation = if (isSerpent) GeoPoint(41.930675, 2.254059) else GeoPoint(41.931992, 2.252433)
         mapView.controller.setCenter(centerLocation)
     }
 
@@ -156,7 +156,7 @@ fun MapScreen(
                                 style = TextStyle(
                                     fontFamily = Montserrat,
                                     fontSize = 13.sp,
-                                    fontWeight = FontWeight.SemiBold,
+                                    fontWeight = FontWeight.Bold,
                                     color = Color.Gray,
                                     lineHeight = 18.sp
                                 )
