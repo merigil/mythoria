@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -26,7 +27,7 @@ import com.cacamites.app.R
 import com.cacamites.app.model.GameState
 import com.cacamites.app.model.GameStatus
 import com.cacamites.app.ui.theme.Merienda
-import com.cacamites.app.ui.theme.Montserrat
+import com.cacamites.app.ui.theme.OpenSans
 import kotlinx.coroutines.delay
 
 @Composable
@@ -104,7 +105,7 @@ fun TrobadorScreen(
                 Text(
                     text = "Sóc l'Isolda, Trobadora de llegendes, i guardo històries que només els més intrèpids poden descobrir. Vine amb mi i et revelaré la llegenda que estàs explorant, així com el secret que hauràs de seguir per fer-la teva.",
                     style = TextStyle(
-                        fontFamily = Montserrat,
+                        fontFamily = OpenSans,
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
                         color = darkText
@@ -113,14 +114,14 @@ fun TrobadorScreen(
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                Divider(modifier = Modifier.padding(vertical = 24.dp), color = Color.LightGray.copy(alpha = 0.5f))
+                HorizontalDivider(modifier = Modifier.padding(vertical = 24.dp), color = Color.LightGray.copy(alpha = 0.5f))
 
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Text(
                         text = "Aquests son els simbols i què volen dir:",
                         color = darkText,
                         style = TextStyle(
-                            fontFamily = Montserrat,
+                            fontFamily = OpenSans,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Black
                         ),
@@ -164,7 +165,7 @@ fun TrobadorScreen(
                 Text(
                     text = textToDisplay,
                     style = TextStyle(
-                        fontFamily = OpenSans,
+                        fontFamily = Merienda,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = darkText
@@ -194,11 +195,11 @@ fun TrobadorScreen(
                     modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("El repte", style = TextStyle(fontFamily = Montserrat, color = darkText, fontWeight = FontWeight.Black, fontSize = 18.sp))
+                        Text("El repte", style = TextStyle(fontFamily = OpenSans, color = darkText, fontWeight = FontWeight.Black, fontSize = 18.sp))
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = if (isWon) "Has completat la llegenda amb èxit!" else "Explora el territori i completa la llegenda. Per aconseguir-ho, hauràs de:",
-                            style = TextStyle(fontFamily = Montserrat, fontSize = 14.sp, fontWeight = FontWeight.Bold, color = darkText),
+                            style = TextStyle(fontFamily = OpenSans, fontSize = 14.sp, fontWeight = FontWeight.Bold, color = darkText),
                             modifier = Modifier.padding(bottom = 12.dp)
                         )
                         
@@ -227,7 +228,7 @@ fun TrobadorScreen(
                 color = Color(0xff0b94fe)
             ) {
                 Box(contentAlignment = Alignment.Center) {
-                    Text(text = "ENTÈS", color = Color.White, style = TextStyle(fontFamily = Montserrat, fontSize = 16.sp, fontWeight = FontWeight.Black))
+                    Text(text = "ENTÈS", color = Color.White, style = TextStyle(fontFamily = OpenSans, fontSize = 16.sp, fontWeight = FontWeight.Black))
                 }
             }
         }
@@ -247,7 +248,7 @@ fun ChallengeItem(text: String, checked: Boolean) {
         Text(
             text = text,
             style = TextStyle(
-                fontFamily = Montserrat,
+                fontFamily = OpenSans,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFF202020)
@@ -268,7 +269,7 @@ fun TrobadorInfoItem(icon: ImageVector, text: String) {
             text = text,
             color = Color(0xFF202020),
             style = TextStyle(
-                fontFamily = Montserrat,
+                fontFamily = OpenSans,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Bold
             ),
