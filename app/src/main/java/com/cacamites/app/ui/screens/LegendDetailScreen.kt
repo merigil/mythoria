@@ -51,10 +51,7 @@ fun LegendDetailScreen(
     val liveCard = cardsList.find { it.id == card.id } ?: card
     
     // Trobem el punt associat a la carta
-    val point = pointsList.find { p -> 
-        if (p.id.startsWith("s_")) "c_s_${p.id.removePrefix("s_")}" == liveCard.id
-        else "c_${p.id.removePrefix("p_")}" == liveCard.id
-    }
+    val point = pointsList.find { "c_${it.id}" == liveCard.id }
     
     val isQuiz = point?.type == PointType.QUIZ && point.quiz != null
 
