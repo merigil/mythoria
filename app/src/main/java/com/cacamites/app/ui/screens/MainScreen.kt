@@ -70,7 +70,7 @@ fun MainScreen() {
                 repository = repository,
                 onPointClick = { point ->
                     repository.onPointVisited(point.id)
-                    val cardId = if (point.id.startsWith("s_")) "c_s_${point.id.removePrefix("s_")}" else "c_${point.id.removePrefix("p_")}"
+                    val cardId = "c_${point.id}"
                     navController.navigate("legend_detail/$cardId")
                 },
                 onOpenBook = {
