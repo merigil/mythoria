@@ -9,7 +9,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.cacamites.app.R
 import androidx.compose.ui.text.googlefonts.GoogleFont
-import androidx.compose.ui.text.googlefonts.Font
+import androidx.compose.ui.text.googlefonts.Font as GFont
+
+// Colors personalitzats
+val DarkCharcoal = Color(0xFF333333)
+val GrayText = Color(0xFF666666)
+val DefaultDarkText = Color(0xFF202020)
 
 // Google Fonts Provider
 val provider = GoogleFont.Provider(
@@ -21,17 +26,17 @@ val provider = GoogleFont.Provider(
 val OpenSansFont = GoogleFont("Open Sans")
 
 val OpenSans = FontFamily(
-    Font(googleFont = OpenSansFont, fontProvider = provider),
-    Font(googleFont = OpenSansFont, fontProvider = provider, weight = FontWeight.Bold),
-    Font(googleFont = OpenSansFont, fontProvider = provider, weight = FontWeight.ExtraBold)
+    GFont(googleFont = OpenSansFont, fontProvider = provider),
+    GFont(googleFont = OpenSansFont, fontProvider = provider, weight = FontWeight.Bold),
+    GFont(googleFont = OpenSansFont, fontProvider = provider, weight = FontWeight.ExtraBold)
 )
+
+// Alias Montserrat per a compatibilitat total
+val Montserrat = OpenSans
 
 val Merienda = FontFamily(
     Font(R.font.merienda)
 )
-
-// Colors per defecte accessibles
-val DefaultDarkText = Color(0xFF202020)
 
 val Typography = Typography(
     headlineLarge = TextStyle(
