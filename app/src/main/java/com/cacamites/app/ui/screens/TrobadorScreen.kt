@@ -114,7 +114,7 @@ fun TrobadorScreen(
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                HorizontalDivider(modifier = Modifier.padding(vertical = 24.dp), color = Color.LightGray.copy(alpha = 0.5f))
+                Divider(modifier = Modifier.padding(vertical = 24.dp), color = Color.LightGray.copy(alpha = 0.5f))
 
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Text(
