@@ -101,28 +101,63 @@ fun MapScreen(
         }
     }
 
+    val vibratedPoints = remember { mutableStateListOf<String>() }
+
+    LaunchedEffect(points) {
+        while (true) {
+            val userLocation = locationOverlay.myLocation
+            if (userLocation != null) {
+                points.filter { it.state == PointState.VISIBLE }.forEach { point ->
+                    if (!vibratedPoints.contains(point.id)) {
+                        val distance = userLocation.distanceToAsDouble(point.coordinate)
+                        if (distance <= 20.0) {
+                            val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+                                vibratorManager.defaultVibrator
+                            } else {
+                                @Suppress("DEPRECATION")
+                                context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+                            }
+
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                vibrator.vibrate(VibrationEffect.createOneShot(300, VibrationEffect.DEFAULT_AMPLITUDE))
+                            } else {
+                                @Suppress("DEPRECATION")
+                                vibrator.vibrate(300)
+                            }
+                            vibratedPoints.add(point.id)
+                        }
+                    }
+                }
+            }
+            kotlinx.coroutines.delay(2000)
+        }
+    }
+
     LaunchedEffect(points) {
         addMarkersToMap(mapView, points) { selectedPoint ->
             val userLocation = locationOverlay.myLocation
             if (userLocation != null) {
                 val distance = userLocation.distanceToAsDouble(selectedPoint.coordinate)
                 if (distance <= 20.0) {
-                    // Vibració per a tots els punts
-                    val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                        val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-                        vibratorManager.defaultVibrator
-                    } else {
-                        @Suppress("DEPRECATION")
-                        context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-                    }
+                    // Si per algun motiu no ha vibrat automàticament (ex: delay del loop), vibrem en clicar
+                    if (!vibratedPoints.contains(selectedPoint.id)) {
+                        val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                            val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+                            vibratorManager.defaultVibrator
+                        } else {
+                            @Suppress("DEPRECATION")
+                            context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+                        }
 
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        vibrator.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE))
-                    } else {
-                        @Suppress("DEPRECATION")
-                        vibrator.vibrate(200)
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            vibrator.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE))
+                        } else {
+                            @Suppress("DEPRECATION")
+                            vibrator.vibrate(200)
+                        }
+                        vibratedPoints.add(selectedPoint.id)
                     }
-
                     onPointClick(selectedPoint)
                 } else {
                     Toast.makeText(context, "Estàs massa lluny per interactuar!", Toast.LENGTH_SHORT).show()
