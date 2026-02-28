@@ -25,6 +25,7 @@ class GameRepository {
     private val SERPENT_TIMER_SECONDS = 30 * 60L
     private var timerJob: Job? = null
     private val scope = CoroutineScope(Dispatchers.Default)
+    private val _vibratedPoints = mutableSetOf<String>()
 
     private val _gameState = MutableStateFlow(GameState())
     val gameState: StateFlow<GameState> = _gameState.asStateFlow()
@@ -259,4 +260,7 @@ class GameRepository {
         val distance = userLoc.distanceTo(targetLoc)
         return Pair(distance <= threshold, distance)
     }
+
+    fun isVibrated(pointId: String): Boolean = _vibratedPoints.contains(pointId)
+    fun markAsVibrated(pointId: String) { _vibratedPoints.add(pointId) }
 }

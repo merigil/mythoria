@@ -101,14 +101,12 @@ fun MapScreen(
         }
     }
 
-    val vibratedPoints = remember { mutableStateListOf<String>() }
-
     LaunchedEffect(points) {
         while (true) {
             val userLocation = locationOverlay.myLocation
             if (userLocation != null) {
                 points.filter { it.state == PointState.VISIBLE }.forEach { point ->
-                    if (!vibratedPoints.contains(point.id)) {
+                    if (!repository.isVibrated(point.id)) {
                         val distance = userLocation.distanceToAsDouble(point.coordinate)
                         if (distance <= 20.0) {
                             val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -125,7 +123,7 @@ fun MapScreen(
                                 @Suppress("DEPRECATION")
                                 vibrator.vibrate(300)
                             }
-                            vibratedPoints.add(point.id)
+                            repository.markAsVibrated(point.id)
                         }
                     }
                 }
@@ -141,7 +139,7 @@ fun MapScreen(
                 val distance = userLocation.distanceToAsDouble(selectedPoint.coordinate)
                 if (distance <= 20.0) {
                     // Si per algun motiu no ha vibrat automàticament (ex: delay del loop), vibrem en clicar
-                    if (!vibratedPoints.contains(selectedPoint.id)) {
+                    if (!repository.isVibrated(selectedPoint.id)) {
                         val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                             val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
                             vibratorManager.defaultVibrator
@@ -156,7 +154,7 @@ fun MapScreen(
                             @Suppress("DEPRECATION")
                             vibrator.vibrate(200)
                         }
-                        vibratedPoints.add(selectedPoint.id)
+                        repository.markAsVibrated(selectedPoint.id)
                     }
                     onPointClick(selectedPoint)
                 } else {
