@@ -42,7 +42,7 @@ import com.cacamites.app.model.PointState
 import com.cacamites.app.repository.GameRepository
 import com.cacamites.app.ui.components.BottomMenuBar
 import com.cacamites.app.ui.components.addMarkersToMap
-import com.cacamites.app.ui.theme.Montserrat
+import com.cacamites.app.ui.theme.OpenSans
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
@@ -175,7 +175,7 @@ fun MapScreen(
                             Text(
                                 text = statusText,
                                 style = TextStyle(
-                                    fontFamily = Montserrat,
+                                    fontFamily = OpenSans,
                                     fontSize = 13.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = Color.Gray,

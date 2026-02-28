@@ -32,7 +32,7 @@ import com.cacamites.app.R
 import com.cacamites.app.ui.components.BottomMenuBar
 import com.cacamites.app.ui.components.MainTopAppBar
 import com.cacamites.app.ui.components.SearchField
-import com.cacamites.app.ui.theme.Montserrat
+import com.cacamites.app.ui.theme.OpenSans
 import com.cacamites.app.ui.theme.Merienda
 
 data class LegendAdventure(
@@ -176,7 +176,7 @@ fun LegendAdventureCard(
                         Text(
                             text = title,
                             style = TextStyle(
-                                fontFamily = Montserrat,
+                                fontFamily = OpenSans,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Black,
                                 color = if (isActive) darkText else Color.Gray
@@ -186,7 +186,7 @@ fun LegendAdventureCard(
                         Text(
                             text = location,
                             style = TextStyle(
-                                fontFamily = Montserrat,
+                                fontFamily = OpenSans,
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = if (isActive) darkText else Color.LightGray

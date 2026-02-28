@@ -17,16 +17,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.platform.LocalContext
 import com.cacamites.app.R
 import com.cacamites.app.model.GameState
 import com.cacamites.app.model.GameStatus
@@ -169,7 +164,7 @@ fun TrobadorScreen(
                 Text(
                     text = textToDisplay,
                     style = TextStyle(
-                        fontFamily = Merienda,
+                        fontFamily = OpenSans,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = darkText

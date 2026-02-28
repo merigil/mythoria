@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.sp
 import com.cacamites.app.model.Card
 import com.cacamites.app.repository.GameRepository
 import com.cacamites.app.ui.theme.Merienda
-import com.cacamites.app.ui.theme.Montserrat
+import com.cacamites.app.ui.theme.OpenSans
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -81,7 +81,7 @@ fun LegendBookScreen(
                 Text(
                     text = "Llegendes Descobertes: $unlockedCount / $totalCount",
                     style = TextStyle(
-                        fontFamily = Montserrat, 
+                        fontFamily = OpenSans, 
                         fontWeight = FontWeight.Black, 
                         fontSize = 14.sp
                     ),
@@ -152,7 +152,7 @@ fun LegendCardItem(
                     Text(
                         text = card.title,
                         style = TextStyle(
-                            fontFamily = Montserrat, 
+                            fontFamily = OpenSans, 
                             fontWeight = FontWeight.Black, 
                             fontSize = 13.sp,
                             color = textBlack

@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cacamites.app.R
 import com.cacamites.app.ui.theme.Merienda
-import com.cacamites.app.ui.theme.Montserrat
+import com.cacamites.app.ui.theme.OpenSans
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -141,7 +141,7 @@ fun OnboardingPageContent(
                                 color = darkText,
                                 modifier = Modifier.padding(16.dp),
                                 style = TextStyle(
-                                    fontFamily = Montserrat,
+                                    fontFamily = OpenSans,
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.Bold,
                                     lineHeight = 20.sp
@@ -153,19 +153,19 @@ fun OnboardingPageContent(
 
                         Text(
                             text = buildAnnotatedString {
-                                withStyle(style = SpanStyle(fontFamily = Montserrat, fontWeight = FontWeight.Black, fontSize = 16.sp, color = darkText)) {
+                                withStyle(style = SpanStyle(fontFamily = OpenSans, fontWeight = FontWeight.Black, fontSize = 16.sp, color = darkText)) {
                                     append(stringResource(R.string.onb_p0_steps_title) + "\n\n")
                                 }
-                                withStyle(style = SpanStyle(fontFamily = Montserrat, fontWeight = FontWeight.Black, fontSize = 14.sp, color = primaryBlue)) {
+                                withStyle(style = SpanStyle(fontFamily = OpenSans, fontWeight = FontWeight.Black, fontSize = 14.sp, color = primaryBlue)) {
                                     append(stringResource(R.string.onb_p0_step1_label))
                                 }
-                                withStyle(style = SpanStyle(fontFamily = Montserrat, fontWeight = FontWeight.Bold, fontSize = 13.sp, color = darkText)) {
+                                withStyle(style = SpanStyle(fontFamily = OpenSans, fontWeight = FontWeight.Bold, fontSize = 13.sp, color = darkText)) {
                                     append(stringResource(R.string.onb_p0_step1_body) + "\n\n")
                                 }
-                                withStyle(style = SpanStyle(fontFamily = Montserrat, fontWeight = FontWeight.Black, fontSize = 14.sp, color = primaryBlue)) {
+                                withStyle(style = SpanStyle(fontFamily = OpenSans, fontWeight = FontWeight.Black, fontSize = 14.sp, color = primaryBlue)) {
                                     append(stringResource(R.string.onb_p0_step2_label))
                                 }
-                                withStyle(style = SpanStyle(fontFamily = Montserrat, fontWeight = FontWeight.Bold, fontSize = 13.sp, color = darkText)) {
+                                withStyle(style = SpanStyle(fontFamily = OpenSans, fontWeight = FontWeight.Bold, fontSize = 13.sp, color = darkText)) {
                                     append(stringResource(R.string.onb_p0_step2_body))
                                 }
                             },

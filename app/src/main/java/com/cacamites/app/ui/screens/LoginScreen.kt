@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cacamites.app.R
 import com.cacamites.app.ui.theme.Merienda
-import com.cacamites.app.ui.theme.Montserrat
+import com.cacamites.app.ui.theme.OpenSans
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -89,7 +89,7 @@ fun LoginScreen(
                 text = "Nom",
                 color = grayTextColor,
                 style = TextStyle(
-                    fontFamily = Montserrat,
+                    fontFamily = OpenSans,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold
                 ),
@@ -112,7 +112,7 @@ fun LoginScreen(
                 text = "Password",
                 color = grayTextColor,
                 style = TextStyle(
-                    fontFamily = Montserrat,
+                    fontFamily = OpenSans,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold
                 ),
@@ -162,7 +162,7 @@ fun LoginScreen(
                     color = Color.White,
                     textAlign = TextAlign.Center,
                     style = TextStyle(
-                        fontFamily = Montserrat,
+                        fontFamily = OpenSans,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Black
                     )
