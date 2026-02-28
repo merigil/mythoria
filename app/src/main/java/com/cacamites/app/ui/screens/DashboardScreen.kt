@@ -206,7 +206,7 @@ fun LegendAdventureCard(
                             Text(
                                 text = "ENTRA",
                                 color = Color.White,
-                                style = TextStyle(fontFamily = Montserrat, fontSize = 14.sp, fontWeight = FontWeight.Black)
+                                style = TextStyle(fontFamily = OpenSans, fontSize = 14.sp, fontWeight = FontWeight.Black)
                             )
                         }
                     }

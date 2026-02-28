@@ -135,7 +135,7 @@ fun LoginScreen(
             color = grayTextColor,
             textAlign = TextAlign.End,
             style = TextStyle(
-                fontFamily = Montserrat,
+                fontFamily = OpenSans,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.SemiBold
             ),
@@ -176,7 +176,7 @@ fun LoginScreen(
             color = grayTextColor,
             textAlign = TextAlign.Center,
             style = TextStyle(
-                fontFamily = Montserrat,
+                fontFamily = OpenSans,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold
             ),
