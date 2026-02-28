@@ -11,11 +11,6 @@ import com.cacamites.app.R
 import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.text.googlefonts.Font as GFont
 
-// Colors personalitzats
-val DarkCharcoal = Color(0xFF333333)
-val GrayText = Color(0xFF666666)
-val DefaultDarkText = Color(0xFF202020)
-
 // Google Fonts Provider
 val provider = GoogleFont.Provider(
     providerAuthority = "com.google.android.gms.fonts",
@@ -43,30 +38,30 @@ val Typography = Typography(
         fontFamily = Merienda,
         fontWeight = FontWeight.Black,
         fontSize = 32.sp,
-        color = DefaultDarkText
+        color = DarkCharcoal
     ),
     headlineMedium = TextStyle(
         fontFamily = Merienda,
         fontWeight = FontWeight.Black,
         fontSize = 28.sp,
-        color = DefaultDarkText
+        color = DarkCharcoal
     ),
     titleLarge = TextStyle(
         fontFamily = OpenSans,
         fontWeight = FontWeight.Bold,
         fontSize = 22.sp,
-        color = DefaultDarkText
+        color = DarkCharcoal
     ),
     bodyLarge = TextStyle(
         fontFamily = OpenSans,
         fontWeight = FontWeight.Bold,
         fontSize = 16.sp,
-        color = DefaultDarkText
+        color = DarkCharcoal
     ),
     bodyMedium = TextStyle(
         fontFamily = OpenSans,
         fontWeight = FontWeight.Bold,
         fontSize = 14.sp,
-        color = DefaultDarkText
+        color = DarkCharcoal
     )
 )
