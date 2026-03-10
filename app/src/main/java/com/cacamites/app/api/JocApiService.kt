@@ -35,5 +35,13 @@ interface JocApiService {
      */
     @GET("api/ranking/top")
     suspend fun getTopRanking(): List<Map<String, Any>>
+
+    /**
+     * Obté una llegenda pel seu codi.
+     */
+    @GET("api/llegendes/{codi}")
+    suspend fun getLlegendaPerCodi(
+        @retrofit2.http.Path("codi") codi: String
+    ): Response<LlegendaResponse>
 }
 

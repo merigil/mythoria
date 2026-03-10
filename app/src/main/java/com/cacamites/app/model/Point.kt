@@ -37,6 +37,8 @@ data class Point(
     val isMandatory: Boolean = false,
     val isTrap: Boolean = false,
     val isAlwaysInvisible: Boolean = false,
-    val quiz: Quiz? = null
+    val quiz: Quiz? = null,
+    val isCorrect: Boolean = false,
+    val descriptionOverride: String? = null
 )
 

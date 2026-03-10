@@ -5,9 +5,10 @@ package com.cacamites.app.model.api
  */
 data class LlegendaResponse(
     val id: Int,
+    val codi: String,
     val titol: String,
-    val distancia_metres: Double,
-    val activa: Boolean,
+    val distancia_metres: Double? = null,
+    val activa: Boolean = true,
     val config: Map<String, Any>? = null
 )
 

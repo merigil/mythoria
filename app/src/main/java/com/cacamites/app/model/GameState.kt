@@ -20,5 +20,10 @@ data class GameState(
     val keyItemsCollected: List<String> = emptyList(),
     val isTimerActive: Boolean = false,
     val timeRemainingMs: Long = 0,
-    val isChased: Boolean = false
+    val isChased: Boolean = false,
+    
+    // Minyona specific
+    val currentPart: Int = 1,
+    val consecutiveHits: Int = 0,
+    val pointXPosition: GeoPoint? = null
 )

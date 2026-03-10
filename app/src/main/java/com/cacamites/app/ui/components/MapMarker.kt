@@ -59,6 +59,16 @@ fun addMarkersToMap(
             } else {
                 if (isStart) {
                     marker.icon = createFlagMarker(context, "#F17002")
+                } else if (point.id.startsWith("m_p")) {
+                    // Personatge Minyona - Blau
+                    val drawable = ContextCompat.getDrawable(context, org.osmdroid.library.R.drawable.marker_default)
+                    drawable?.setTint(android.graphics.Color.BLUE)
+                    marker.icon = drawable
+                } else if (point.id.startsWith("m_o")) {
+                    // Objecte Minyona - Groc/Taronja
+                    val drawable = ContextCompat.getDrawable(context, org.osmdroid.library.R.drawable.marker_default)
+                    drawable?.setTint(android.graphics.Color.parseColor("#FFD700"))
+                    marker.icon = drawable
                 } else {
                     val drawable = ContextCompat.getDrawable(context, org.osmdroid.library.R.drawable.marker_default)
                     drawable?.setTint(android.graphics.Color.RED)

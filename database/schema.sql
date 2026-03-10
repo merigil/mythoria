@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS jugadors (
 -- Taula de les 300 Llegendes
 CREATE TABLE IF NOT EXISTS llegendes (
     id SERIAL PRIMARY KEY,
+    codi VARCHAR(20) UNIQUE NOT NULL, -- Identificador de text (p.ex. 'BARO', 'MINYONA')
     titol VARCHAR(100) NOT NULL,
     posicio GEOGRAPHY(POINT) NOT NULL, -- Lat/Long real
     radi_activacio INTEGER DEFAULT 50, -- metres

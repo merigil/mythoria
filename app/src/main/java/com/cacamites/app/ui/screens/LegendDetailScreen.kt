@@ -143,7 +143,7 @@ fun LegendDetailScreen(
                 Divider(modifier = Modifier.padding(vertical = 24.dp), color = Color.LightGray.copy(alpha = 0.5f))
 
                 Text(
-                    text = liveCard.description,
+                    text = point?.descriptionOverride ?: liveCard.description,
                     style = MaterialTheme.typography.bodyLarge.copy(
                         lineHeight = 26.sp,
                         fontSize = 16.sp,
@@ -188,6 +188,68 @@ fun LegendDetailScreen(
                             repository.onQuizAnswered(point.id, index)
                             // No tanquem immediatament per deixar que vegi el canvi de text si n'hi ha
                         })
+                    }
+                }
+                
+                // --- MINYONA OBJECT ACTIVATION ---
+                val isMinyonaObject = point?.type == PointType.OBJECT && point.id.startsWith("m_o")
+                if (isMinyonaObject && gameState.currentPart == 2) {
+                    Spacer(modifier = Modifier.height(24.dp))
+                    
+                    val isAtPointX = repository.userLocation.value?.let { userPos ->
+                        gameState.pointXPosition?.let { targetPos ->
+                            val results = FloatArray(1)
+                            android.location.Location.distanceBetween(
+                                userPos.latitude, userPos.longitude,
+                                targetPos.latitude, targetPos.longitude,
+                                results
+                            )
+                            results[0] <= 5f
+                        }
+                    } ?: false
+
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Button(
+                            onClick = { 
+                                repository.onObjectActivated(point!!.id)
+                            },
+                            enabled = isAtPointX && point!!.state != com.cacamites.app.model.PointState.COMPLETED,
+                            modifier = Modifier.fillMaxWidth().height(54.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text("ACTIVAR AL LLOC", fontWeight = FontWeight.Black)
+                        }
+                        
+                        if (!isAtPointX) {
+                            Spacer(Modifier.height(8.dp))
+                            Text(
+                                text = "Has de ser al punt X (Capella) per activar l'objecte",
+                                color = Color.Red,
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+                        
+                        // Feedback messages
+                        if (point!!.state == com.cacamites.app.model.PointState.COMPLETED) {
+                           if (point.isCorrect) {
+                                Text(
+                                    text = "Has aturat la caiguda! Enhorabona, portis ${gameState.consecutiveHits} de 3.",
+                                    color = Color(0xFF4CAF50),
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(top = 16.dp),
+                                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                )
+                           } else {
+                                Text(
+                                    text = "Aquest objecte no serveix! El comptador s'ha reiniciat.",
+                                    color = Color(0xFFE53935),
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(top = 16.dp),
+                                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                )
+                           }
+                        }
                     }
                 }
                 

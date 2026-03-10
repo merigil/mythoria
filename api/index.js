@@ -76,6 +76,26 @@ fastify.get('/api/llegendes/proximitat', async (request, reply) => {
 });
 
 /**
+ * Obtenir una llegenda per codi (p.ex. 'MINYONA')
+ */
+fastify.get('/api/llegendes/:codi', async (request, reply) => {
+    const { codi } = request.params;
+    try {
+        const query = 'SELECT id, codi, titol, config_joc, dificultat FROM llegendes WHERE codi = $1';
+        const { rows } = await fastify.pg.query(query, [codi.toUpperCase()]);
+
+        if (rows.length === 0) {
+            return reply.code(404).send({ error: 'Llegenda no trobada' });
+        }
+
+        return rows[0];
+    } catch (err) {
+        fastify.log.error(err);
+        return reply.code(500).send({ error: 'Error del servidor' });
+    }
+});
+
+/**
  * Finalitzar joc: Registre en DB + Redis Update + Broadcast
  * Seguretat: Valida HMAC i Proximitat GPS (ST_DWithin)
  */

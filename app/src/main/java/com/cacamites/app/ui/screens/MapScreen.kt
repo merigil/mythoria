@@ -132,13 +132,12 @@ fun MapScreen(
         }
     }
 
-    LaunchedEffect(points) {
+    LaunchedEffect(points, gameState.currentPart) {
         addMarkersToMap(mapView, points) { selectedPoint ->
             val userLocation = locationOverlay.myLocation
             if (userLocation != null) {
                 val distance = userLocation.distanceToAsDouble(selectedPoint.coordinate)
                 if (distance <= 20.0) {
-                    // Si per algun motiu no ha vibrat automàticament (ex: delay del loop), vibrem en clicar
                     if (!repository.isVibrated(selectedPoint.id)) {
                         val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                             val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
@@ -163,6 +162,25 @@ fun MapScreen(
             } else {
                 onPointClick(selectedPoint)
             }
+        }
+        
+        // Draw Route for Minyona Part 1
+        if (gameState.legendId == "MINYONA" && gameState.currentPart == 1) {
+            // Remove existing polylines to avoid duplicates
+            mapView.overlays.removeAll { it is org.osmdroid.views.overlay.Polyline }
+            
+            val start = points.find { it.id == "m_start" }?.coordinate
+            val end = gameState.pointXPosition
+            if (start != null && end != null) {
+                val line = org.osmdroid.views.overlay.Polyline()
+                line.setPoints(listOf(start, end))
+                line.outlinePaint.color = android.graphics.Color.BLUE
+                line.outlinePaint.strokeWidth = 5f
+                mapView.overlays.add(line)
+            }
+        } else if (gameState.legendId == "MINYONA" && gameState.currentPart == 2) {
+            // Clear route when entering Part 2
+            mapView.overlays.removeAll { it is org.osmdroid.views.overlay.Polyline }
         }
     }
 
