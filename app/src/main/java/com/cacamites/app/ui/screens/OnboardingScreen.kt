@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -73,8 +74,7 @@ fun OnboardingPageContent(
 ) {
     val scrollState = rememberScrollState()
     val primaryBlue = Color(0xff0b94fe)
-    val primaryOrange = Color(0xFFF17002)
-    val darkText = Color(0xFF202020) // El color dels títols
+    val darkText = Color(0xFF202020)
 
     Box(
         modifier = Modifier
@@ -108,7 +108,6 @@ fun OnboardingPageContent(
                 modifier = Modifier.padding(horizontal = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // TÍTOL (Merienda + darkText)
                 Text(
                     text = stringResource(
                         when (pageIndex) {
@@ -129,6 +128,14 @@ fun OnboardingPageContent(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                val itemStyle = TextStyle(
+                    fontFamily = OpenSans,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    lineHeight = 22.sp,
+                    color = darkText
+                )
+
                 when (pageIndex) {
                     0 -> {
                         Surface(
@@ -140,12 +147,7 @@ fun OnboardingPageContent(
                                 text = stringResource(R.string.onb_p0_intro),
                                 color = darkText,
                                 modifier = Modifier.padding(16.dp),
-                                style = TextStyle(
-                                    fontFamily = OpenSans,
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    lineHeight = 20.sp
-                                )
+                                style = itemStyle
                             )
                         }
 
@@ -156,17 +158,11 @@ fun OnboardingPageContent(
                                 withStyle(style = SpanStyle(fontFamily = OpenSans, fontWeight = FontWeight.Black, fontSize = 16.sp, color = darkText)) {
                                     append(stringResource(R.string.onb_p0_steps_title) + "\n\n")
                                 }
-                                withStyle(style = SpanStyle(fontFamily = OpenSans, fontWeight = FontWeight.Black, fontSize = 14.sp, color = primaryBlue)) {
+                                withStyle(style = SpanStyle(fontFamily = OpenSans, fontWeight = FontWeight.Black, fontSize = 16.sp, color = darkText)) {
                                     append(stringResource(R.string.onb_p0_step1_label))
                                 }
-                                withStyle(style = SpanStyle(fontFamily = OpenSans, fontWeight = FontWeight.Bold, fontSize = 13.sp, color = darkText)) {
-                                    append(stringResource(R.string.onb_p0_step1_body) + "\n\n")
-                                }
-                                withStyle(style = SpanStyle(fontFamily = OpenSans, fontWeight = FontWeight.Black, fontSize = 14.sp, color = primaryBlue)) {
+                                withStyle(style = SpanStyle(fontFamily = OpenSans, fontWeight = FontWeight.Black, fontSize = 16.sp, color = darkText)) {
                                     append(stringResource(R.string.onb_p0_step2_label))
-                                }
-                                withStyle(style = SpanStyle(fontFamily = OpenSans, fontWeight = FontWeight.Bold, fontSize = 13.sp, color = darkText)) {
-                                    append(stringResource(R.string.onb_p0_step2_body))
                                 }
                             },
                             textAlign = TextAlign.Start,
@@ -177,24 +173,13 @@ fun OnboardingPageContent(
                         Column(modifier = Modifier.fillMaxWidth()) {
                             Text(
                                 text = stringResource(R.string.onb_p1_intro),
-                                style = TextStyle(fontFamily = OpenSans, fontSize = 14.sp, fontWeight = FontWeight.Bold, lineHeight = 22.sp),
-                                color = darkText
+                                style = itemStyle
                             )
                             Spacer(modifier = Modifier.height(16.dp))
-                            val bulletStyle = TextStyle(fontFamily = OpenSans, fontSize = 13.sp, fontWeight = FontWeight.Bold, lineHeight = 20.sp, color = darkText)
-                            Column(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                                Row(verticalAlignment = Alignment.Top) {
-                                    Text("• ", color = primaryBlue, fontWeight = FontWeight.Black, fontSize = 16.sp)
-                                    Text(stringResource(R.string.onb_p1_bullet1), style = bulletStyle)
-                                }
-                                Row(verticalAlignment = Alignment.Top) {
-                                    Text("• ", color = primaryBlue, fontWeight = FontWeight.Black, fontSize = 16.sp)
-                                    Text(stringResource(R.string.onb_p1_bullet2), style = bulletStyle)
-                                }
-                                Row(verticalAlignment = Alignment.Top) {
-                                    Text("• ", color = primaryBlue, fontWeight = FontWeight.Black, fontSize = 16.sp)
-                                    Text(stringResource(R.string.onb_p1_bullet3), style = bulletStyle)
-                                }
+                            Column(verticalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
+                                Text(stringResource(R.string.onb_p1_bullet1), style = itemStyle)
+                                Text(stringResource(R.string.onb_p1_bullet2), style = itemStyle)
+                                Text(stringResource(R.string.onb_p1_bullet3), style = itemStyle)
                             }
                         }
                     }
@@ -202,69 +187,38 @@ fun OnboardingPageContent(
                         Column(modifier = Modifier.fillMaxWidth()) {
                             Text(
                                 text = stringResource(R.string.onb_p2_intro),
-                                style = TextStyle(fontFamily = OpenSans, fontSize = 14.sp, fontWeight = FontWeight.Bold, lineHeight = 22.sp),
-                                color = darkText
+                                style = itemStyle
                             )
-                            Spacer(modifier = Modifier.height(20.dp))
+                            
+                            Spacer(modifier = Modifier.height(24.dp))
+
                             Text(
                                 text = stringResource(R.string.onb_p2_points_title),
-                                style = TextStyle(fontFamily = Merienda, fontSize = 16.sp, fontWeight = FontWeight.Black),
-                                color = primaryBlue
+                                color = darkText,
+                                style = TextStyle(fontFamily = OpenSans, fontWeight = FontWeight.Black, fontSize = 16.sp)
                             )
                             Spacer(modifier = Modifier.height(8.dp))
-                            val pointBodyStyle = TextStyle(fontFamily = OpenSans, fontSize = 13.sp, fontWeight = FontWeight.Bold, lineHeight = 20.sp, color = darkText)
-                            Column(verticalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth()) {
-                                Row(verticalAlignment = Alignment.Top) {
-                                    Text(stringResource(R.string.onb_p2_point1_label), color = primaryOrange, fontWeight = FontWeight.Black, fontSize = 15.sp)
-                                    Text(stringResource(R.string.onb_p2_point1_body), style = pointBodyStyle)
-                                }
-                                Row(verticalAlignment = Alignment.Top) {
-                                    Text(stringResource(R.string.onb_p2_point2_label), color = primaryOrange, fontWeight = FontWeight.Black, fontSize = 15.sp)
-                                    Text(stringResource(R.string.onb_p2_point2_body), style = pointBodyStyle)
-                                }
-                            }
+                            Text(stringResource(R.string.onb_p2_point1_label), style = itemStyle)
+                            Text(stringResource(R.string.onb_p2_point2_label), style = itemStyle)
+
                             Spacer(modifier = Modifier.height(20.dp))
-                            // Maneres de jugar
+
                             Text(
                                 text = stringResource(R.string.onb_p2_ways_title),
-                                style = TextStyle(fontFamily = Merienda, fontSize = 16.sp, fontWeight = FontWeight.Black),
-                                color = primaryBlue
+                                color = darkText,
+                                style = TextStyle(fontFamily = OpenSans, fontWeight = FontWeight.Black, fontSize = 16.sp)
                             )
                             Spacer(modifier = Modifier.height(8.dp))
-                            val wayStyle = TextStyle(fontFamily = OpenSans, fontSize = 13.sp, fontWeight = FontWeight.Bold, lineHeight = 20.sp, color = darkText)
-                            Column(verticalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth()) {
-                                Row(verticalAlignment = Alignment.Top) {
-                                    Text("• ", color = primaryBlue, fontWeight = FontWeight.Black, fontSize = 15.sp)
-                                    Text(stringResource(R.string.onb_p2_way1), style = wayStyle)
-                                }
-                                Row(verticalAlignment = Alignment.Top) {
-                                    Text("• ", color = primaryBlue, fontWeight = FontWeight.Black, fontSize = 15.sp)
-                                    Text(stringResource(R.string.onb_p2_way2), style = wayStyle)
-                                }
-                                Row(verticalAlignment = Alignment.Top) {
-                                    Text("• ", color = primaryBlue, fontWeight = FontWeight.Black, fontSize = 15.sp)
-                                    Text(stringResource(R.string.onb_p2_way3), style = wayStyle)
-                                }
-                            }
-                            Spacer(modifier = Modifier.height(20.dp))
-                            // Rutes accessibles
-                            Surface(
-                                color = Color(0xFFE8F5E9),
-                                shape = RoundedCornerShape(10.dp),
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Column(modifier = Modifier.padding(12.dp)) {
-                                    Text(
-                                        text = stringResource(R.string.onb_p2_access_title),
-                                        style = TextStyle(fontFamily = Merienda, fontSize = 15.sp, fontWeight = FontWeight.Black),
-                                        color = Color(0xFF2E7D32)
-                                    )
-                                    Spacer(modifier = Modifier.height(6.dp))
-                                    val accessStyle = TextStyle(fontFamily = OpenSans, fontSize = 13.sp, fontWeight = FontWeight.Bold, lineHeight = 20.sp, color = darkText)
-                                    Text(stringResource(R.string.onb_p2_access1), style = accessStyle)
-                                    Text(stringResource(R.string.onb_p2_access2), style = accessStyle)
-                                }
-                            }
+                            Text(stringResource(R.string.onb_p2_way1), style = itemStyle)
+                            Text(stringResource(R.string.onb_p2_way2), style = itemStyle)
+                            Text(stringResource(R.string.onb_p2_way3), style = itemStyle)
+                            
+                            Spacer(modifier = Modifier.height(16.dp))
+                            
+                            Text(
+                                text = stringResource(R.string.onb_p2_way4),
+                                style = itemStyle
+                            )
                         }
                     }
                 }
@@ -287,6 +241,7 @@ fun OnboardingPageContent(
                     modifier = Modifier
                         .width(150.dp)
                         .height(50.dp)
+                        .shadow(elevation = 2.dp, shape = RoundedCornerShape(8.dp))
                         .clickable { onSkip() },
                     shape = RoundedCornerShape(8.dp),
                     color = Color.White,
@@ -305,6 +260,7 @@ fun OnboardingPageContent(
                     modifier = Modifier
                         .width(150.dp)
                         .height(50.dp)
+                        .shadow(elevation = 2.dp, shape = RoundedCornerShape(8.dp))
                         .clickable { onNext() },
                     shape = RoundedCornerShape(8.dp),
                     color = primaryBlue

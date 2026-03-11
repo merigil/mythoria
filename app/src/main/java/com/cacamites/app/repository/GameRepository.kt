@@ -142,11 +142,12 @@ class GameRepository {
         val allPoints = createPoints()
         val filteredPoints = when(type) {
             "SERPENT" -> allPoints.filter { it.id.startsWith("s_") }
+            "MINYONA" -> allPoints.filter { it.id.startsWith("m_") }
             else -> allPoints.filter { it.id.startsWith("p_") }
         }
         
         val initialPoints = filteredPoints.map { 
-            if (it.id.endsWith("_start") || it.id == "p_start") it.copy(state = PointState.VISIBLE) else it 
+            if (it.id.endsWith("_start") || it.id == "p_start" || it.id == "m_start") it.copy(state = PointState.VISIBLE) else it 
         }
         
         _points.value = initialPoints
@@ -191,7 +192,19 @@ class GameRepository {
             Point("s_terrissaire", "El terrissaire", GeoPoint(41.930406, 2.254734), PointType.NARRATIVE, PointState.LOCKED, score = 0),
             Point("s_remeiera", "La vella remeiera", GeoPoint(41.930389, 2.254480), PointType.NARRATIVE, PointState.LOCKED, score = 0),
             Point("s_morter", "El Morter", GeoPoint(41.930529, 2.254812), PointType.HIDDEN_OBJECT, PointState.LOCKED, score = 0, isAlwaysInvisible = true),
-            Point("s_final", "La plaça", GeoPoint(41.930523, 2.254483), PointType.NARRATIVE, PointState.LOCKED, score = 0)
+            Point("s_final", "La plaça", GeoPoint(41.930523, 2.254483), PointType.NARRATIVE, PointState.LOCKED, score = 0),
+
+            // --- EL SALT DE LA MINYONA (TEST) ---
+            Point("m_start", "Punt d'Inici", GeoPoint(41.934695, 2.251292), PointType.NARRATIVE, PointState.VISIBLE),
+            Point("m_capella", "Capella (Punt X)", GeoPoint(41.935563, 2.251944), PointType.NARRATIVE),
+            Point("m_dimoni", "El Dimoni", GeoPoint(41.934800, 2.251400), PointType.NARRATIVE),
+            Point("m_p1", "Vilatà 1", GeoPoint(41.934900, 2.251500), PointType.NARRATIVE),
+            Point("m_p2", "Vilatà 2", GeoPoint(41.935000, 2.251600), PointType.NARRATIVE),
+            Point("m_p3", "Vilatà 3", GeoPoint(41.935100, 2.251700), PointType.NARRATIVE),
+            Point("m_p4", "Vilatà 4", GeoPoint(41.935200, 2.251800), PointType.NARRATIVE),
+            Point("m_savi", "Savi", GeoPoint(41.935500, 2.252000), PointType.NARRATIVE),
+            Point("m_nena", "Nena", GeoPoint(41.935400, 2.251900), PointType.NARRATIVE),
+            Point("m_vell", "Vell", GeoPoint(41.935600, 2.252100), PointType.NARRATIVE)
         )
     }
 
