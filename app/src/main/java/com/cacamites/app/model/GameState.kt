@@ -1,5 +1,7 @@
 package com.cacamites.app.model
 
+import org.osmdroid.util.GeoPoint
+
 enum class GameStatus {
     WAITING_TO_START,
     ACTIVE_PLAY,

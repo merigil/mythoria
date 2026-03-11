@@ -419,7 +419,7 @@ class GameRepository {
         // Auto-trigger Part 2 of Minyona if close to Point X
         val state = _gameState.value
         if (state.legendId == "MINYONA" && state.currentPart == 1) {
-            state.pointXPosition?.let { target ->
+            state.pointXPosition?.let { target: GeoPoint ->
                 val (isNear, _) = checkProximity(lat, lng, target.latitude, target.longitude, 10f)
                 if (isNear) {
                     startMinyonaPart2()
